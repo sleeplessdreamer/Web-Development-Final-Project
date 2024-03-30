@@ -13,7 +13,7 @@
 ## Introduction
 The Grocery Genie web application seeks to make grocery shopping among roommates and families easier, by implementing a virtual grocery list for the group. 
 
-After creating an account, the users can either choose to create a new household and invite others via an invite code, or join another household with the invite code they received. From there, people can create grocery lists and edit the list based on needs, categorizing the different types of groceries needed to facilitate easier shopping when in store.
+After creating an account, users can either choose to create a new household and invite others via an invite code, or join another household with the invite code they received. From there, people can create grocery lists and edit the list based on needs, categorizing the different types of groceries needed to facilitate easier shopping when in store.
 
 ## Core Features
 - **Landing Page:** The homepage for the website, welcoming users and explaining the purpose/functionality of the website 
