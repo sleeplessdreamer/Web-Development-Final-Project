@@ -11,9 +11,9 @@
 - Renny Victoria
 
 ## Introduction
-	The Grocery Genie web application seeks to make grocery shopping among roommates and families easier, by implementing a virtual grocery list for the group. After creating an account, the users can either choose to create a new household and invite others via an invite code, or join another household with the invite code they received. From there, people can create grocery lists and edit the list based on needs, categorizing the different types of groceries needed to facilitate easier shopping when in store.
+The Grocery Genie web application seeks to make grocery shopping among roommates and families easier, by implementing a virtual grocery list for the group. After creating an account, the users can either choose to create a new household and invite others via an invite code, or join another household with the invite code they received. From there, people can create grocery lists and edit the list based on needs, categorizing the different types of groceries needed to facilitate easier shopping when in store.
 
-    We came up with the idea for this app because when living with roommates, oftentimes people may end up buying duplicates of products already in the house, or someone will realize the household needs something while someone is out getting groceries. In addition, for big events like parties or potlucks, users can create lists with what everyone is bringing, so nothing is lost in translation. With the usage of this app, these difficulties will be mitigated and grocery shopping will become a breeze.
+We came up with the idea for this app because when living with roommates, oftentimes people may end up buying duplicates of products already in the house, or someone will realize the household needs something while someone is out getting groceries. In addition, for big events like parties or potlucks, users can create lists with what everyone is bringing, so nothing is lost in translation. With the usage of this app, these difficulties will be mitigated and grocery shopping will become a breeze.
 
 ## Core Features
 - **Landing Page:** The homepage for the website, welcoming users and explaining the purpose/functionality of the website 
