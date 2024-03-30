@@ -1,0 +1,28 @@
+{
+  "name": "cs546-final-project",
+  "version": "1.0.0",
+  "description": "Our Final Project",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "seed": "node ./tasks/seed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nappilil/CS546-Final-Project.git"
+  },
+  "author": "Aditi Deshmukh, Shannon McGratty, Lilli Nappi, Dani Qira, Renny Victoria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nappilil/CS546-Final-Project/issues"
+  },
+  "homepage": "https://github.com/nappilil/CS546-Final-Project#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
+    "handlebars": "^4.7.8",
+    "mongodb": "^6.5.0",
+    "seed": "^0.4.4"
+  }
+}
