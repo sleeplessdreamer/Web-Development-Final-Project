@@ -11,6 +11,10 @@ const exportedMethods = {
   ) {
     return;
   },
+
+  async deleteOldAnnouncement(id) {
+    return;
+  },
   
   async getAllAnnouncements() {
     return;
