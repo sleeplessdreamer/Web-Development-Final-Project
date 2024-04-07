@@ -49,22 +49,19 @@ const checkEmail = (email, varName) => {
 }
 
 const checkPassword = (password, varName) => {
-  if (!password) throw `Error: You must supply a ${varName} that is at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character '!,?,#,$,%,&,*,@'`;
+  // Check if password is at least 8 chars, and combo of upper & lower case char, at least 1 digit, at least 1 special char.
+  if (!password) throw `Error: You must supply a ${varName} that is at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   if (typeof password !== 'string') throw `Error: ${varName} must be a string!`;
   if (password.length === 0)
-    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character '!,?,#,$,%,&,*,@'`;
+    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   if (password.length < 8)
-    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character '!,?,#,$,%,&,*,@'`;
+    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   if (!isNaN(password)) // only numbers
-    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character '@,!,$'`;
-  //TODO: check if contains upper & lowercase letter, 1 digit, & special char
-  const upper = ['A', 'E', 'I', 'O', 'U', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'],
-  lower = ['a', 'e', 'i', 'o', 'u', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'],
-  numbers = ['0','1','2','3','4','5','6','7','8','9'],
-  spaces = [' '],
-  special = ['!', '?', '#,', '$', '%', '&', '*', '@'];
-
-
+    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
+  // https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
+  let regEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  if (!password.match(regEx))
+    throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
   return password;
 }
 

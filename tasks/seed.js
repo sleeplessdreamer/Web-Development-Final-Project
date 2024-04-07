@@ -18,18 +18,41 @@ userOne = await users.addUser(
     21
  );
 
+// Try to add user with existing Email will throw
+try {
+    await users.addUser(
+    "lnappi@stevens.edu",
+    "aDifferentP@assw3rd",
+    "Lilli",
+    "Nappi",
+    21
+    );
+} catch (e) {
+    console.log(e);
+}
+
 userTwo = await users.addUser(
     "adeshmukh@stevens.edu",
     "cannotB3h@cked!",
     "aditi",
     "deshmukh",
     21
- );
+);
 
 ourHousehold = await households.createHousehold(
     "GirlBosses",
     userOne._id.toString()
 );
+
+try {
+    let login = await users.logInUser(
+        "lnappi@stevens.edu",
+        "Password123!"
+    )
+    console.log(login);
+} catch (e) {
+    console.log(e);
+}
 
 // try to add household Name that already exists will throw error
 try {
@@ -55,9 +78,10 @@ ourHousehold = await households.joinHousehold(
     "GirlBosses",
     userTwo._id.toString()
 );
-
 console.log(ourHousehold);
 
+let everybody = await users.getAllUsers();
+console.log(everybody);
 
 console.log()
 

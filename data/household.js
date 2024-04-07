@@ -1,5 +1,5 @@
 import {checkId, checkString} from '../validation.js'
-import {household} from '../config/mongoCollections.js'; // import collection
+import {household, users} from '../config/mongoCollections.js'; // import collection
 import userData from './users.js'
 import {ObjectId} from 'mongodb';
 
@@ -31,6 +31,21 @@ const exportedMethods = {
     const insertInfo = await householdCollection.insertOne(newhouseHold);
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
       throw 'Error: Could not add household';
+
+    // Add householdName to user info
+    const updatedUser = {
+      householdName: householdName,
+    }
+    const userCollection = await users();
+    const updatedInfo = await userCollection.findOneAndUpdate(
+      {_id: new ObjectId(userId)},
+      {$set: updatedUser},
+      {returnDocument: 'after'}
+    );
+    // if user cannot be updated method should throw
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
     newhouseHold._id = newhouseHold._id.toString(); // convert to string
     return newhouseHold;
   },
