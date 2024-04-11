@@ -1,6 +1,7 @@
 import {users} from '../config/mongoCollections.js'; // import collection
 import {checkEmail, checkPassword, checkName, checkAge, checkId} from '../validation.js'
 import {ObjectId} from 'mongodb';
+import bcrypt from 'bcrypt'; 
 
 const exportedMethods = {
   async getUserById(id) {
@@ -20,7 +21,7 @@ const exportedMethods = {
     ) {
       // Error Checking
       email = checkEmail(email, 'Email Address');
-      password = checkPassword(password, 'Password'); // password still need to be encrypted
+      password = checkPassword(password, 'Password');
       firstName = checkName(firstName, 'First Name');
       lastName = checkName(lastName, 'Last Name');
       age = checkAge(age, 'Age');
@@ -29,7 +30,11 @@ const exportedMethods = {
       const userCollection = await users();
       const existingEmail = await userCollection.find({email: email}).toArray();
       if (existingEmail.length !== 0) throw `Error: Email is already in use`;
+      
+      // Hash Password
+      const hashedPassword = await bcrypt.hash(password, 8);
 
+      // Create new user w all info
       let householdName = "";
       let groceryLists = [];
       let announcements = [];
@@ -37,7 +42,7 @@ const exportedMethods = {
       let shopper = false;
       const newUser = {
         email, 
-        password, 
+        hashedPassword, 
         firstName, 
         lastName, 
         age,
@@ -57,16 +62,17 @@ const exportedMethods = {
   },
 
   async logInUser (email, password) {
+    // Make sure it is a valid email
     email = checkEmail(email, "Email Address");
 
     // Check email is in use
     const userCollection = await users();
     const user = await userCollection.find({email: email}).toArray();
     if (user.length === 0) throw `Error: No email exists with that login`;
-    
-    // decrypt password before comparison
-    // existingEmail.password -> decrypt
-    if (!user.password === password) throw `Error: Incorrect Password`;
+
+    // check that passwords match
+    let compare = await bcrypt.compare(password, user[0].hashedPassword);
+    if (!compare) throw `Error: Incorrect Password`;
 
     // return all info about user
     return user[0];
@@ -76,11 +82,12 @@ const exportedMethods = {
     const userCollection = await users();
     let userList = await userCollection
     .find({})
-    .project({_id: 0, firstName: 1, lastName: 1})   // just return the name of the users w project
+    .project({_id: 0, firstName: 1, lastName: 1})   // just return the name of the users
     .toArray();
     if (!userList) {
       throw `Could not get all users`
     }
+    // Create list of just first and last names
     let members = [];
     userList.forEach((object) => {
       members.push(object.firstName + " " + object.lastName);

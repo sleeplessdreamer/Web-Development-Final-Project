@@ -10,6 +10,7 @@ let userOne = undefined,
 userTwo = undefined,
 ourHousehold = undefined;
 
+// Add user (valid)
 userOne = await users.addUser(
     "lnappi@stevens.edu",
     "Password123!",
@@ -28,9 +29,10 @@ try {
     21
     );
 } catch (e) {
-    console.log(e);
+    //console.log(e);
 }
 
+// Add Second User (valid)
 userTwo = await users.addUser(
     "adeshmukh@stevens.edu",
     "cannotB3h@cked!",
@@ -39,19 +41,27 @@ userTwo = await users.addUser(
     21
 );
 
+// Create household (valid)
 ourHousehold = await households.createHousehold(
     "GirlBosses",
     userOne._id.toString()
 );
 
+// Login User (valid)
+let login = await users.logInUser(
+    "lnappi@stevens.edu",
+    "Password123!"
+)
+//console.log(login);
+
+// Try to login user with wrong password should throw
 try {
-    let login = await users.logInUser(
+    await users.logInUser(
         "lnappi@stevens.edu",
-        "Password123!"
+        "aDifferentP@assw3rd"
     )
-    console.log(login);
 } catch (e) {
-    console.log(e);
+    //console.log(e);
 }
 
 // try to add household Name that already exists will throw error
@@ -61,7 +71,7 @@ try {
     userTwo._id.toString()
     )
 } catch (e) {
-    console.log(e);
+    //console.log(e);
 }
 
 // try to join household that does not exist will throw error
@@ -71,17 +81,19 @@ try {
     userTwo._id.toString()
     )
 } catch (e) {
-    console.log(e);
+    //console.log(e);
 }
 
+// Second user joins household (valid)
 ourHousehold = await households.joinHousehold(
     "GirlBosses",
     userTwo._id.toString()
 );
-console.log(ourHousehold);
+//console.log(ourHousehold);
 
+// Get all household members (valid)
 let everybody = await users.getAllUsers();
-console.log(everybody);
+//console.log(everybody);
 
 console.log()
 
