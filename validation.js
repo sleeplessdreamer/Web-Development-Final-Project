@@ -1,6 +1,7 @@
 import {ObjectId} from 'mongodb';
 import * as EmailValidator from 'email-validator';
 
+
 const checkId = (id, varName) => {
   if (!id) throw `Error: You must provide a ${varName}`;
   if (typeof id !== 'string') throw `Error:${varName} must be a string`;
@@ -44,7 +45,8 @@ const checkEmail = (email, varName) => {
     throw `Error: ${varName} cannot be empty or just spaces`;
   // https://www.npmjs.com/package/email-validator imported npm that checks if valid email address
   if (!EmailValidator.validate(email))
-    throw `Error: ${email} is an invalid ${varName}`
+    throw `Error: ${email} is an invalid ${varName}`;
+  // Check that Email is Not Already In Use
   return email;
 }
 
@@ -66,8 +68,8 @@ const checkPassword = (password, varName) => {
 }
 
 const checkName = (name, varName) => {
-  if (!name) throw `Error: You must supply a ${name}!`;
-  if (typeof name !== 'string') throw `Error: ${name} must be a string!`;
+  if (!name) throw `Error: You must supply a ${varName}!`;
+  if (typeof name !== 'string') throw `Error: ${varName} must be a string!`;
   name = name.trim();
   if (name.length === 0)
     throw `Error: ${varName} cannot be an empty string or string with just spaces`;
