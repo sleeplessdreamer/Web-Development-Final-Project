@@ -1,0 +1,20 @@
+<article class="form">
+<h1>Log In</h1>
+<form action="/users/login" method="POST" class="login-form">
+  <label for="login">
+    <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
+    <input type="text" name="password" placeholder="Password" value="{{user.password}}" id="password">
+  </label>
+  <input type="submit" id="submit-button">
+  <input type="reset" id="reset-button">
+</form>
+{{#if hasErrors}}
+  <ul class="error-list">
+    {{#each errors}}
+    <li>
+      {{this}}
+    </li>
+    {{/each}}
+  </ul>
+  {{/if}}
+</article>

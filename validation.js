@@ -46,14 +46,15 @@ const checkEmail = (email, varName) => {
   // https://www.npmjs.com/package/email-validator imported npm that checks if valid email address
   if (!EmailValidator.validate(email))
     throw `Error: ${email} is an invalid ${varName}`;
-  // Check that Email is Not Already In Use
+  email = email.toLowerCase(); // case in-sensitive
   return email;
 }
 
-const checkPassword = (password, varName) => {
+const checkPasswordSignUp = (password, varName) => {
   // Check if password is at least 8 chars, and combo of upper & lower case char, at least 1 digit, at least 1 special char.
-  if (!password) throw `Error: You must supply a ${varName} that is at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
+  if (!password) throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   if (typeof password !== 'string') throw `Error: ${varName} must be a string!`;
+  password = password.trim();
   if (password.length === 0)
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   if (password.length < 8)
@@ -64,6 +65,15 @@ const checkPassword = (password, varName) => {
   let regEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
   if (!password.match(regEx))
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
+  return password;
+}
+
+const checkPasswordLogin = (password, varName) => {
+  // Check if password is at least 8 chars, and combo of upper & lower case char, at least 1 digit, at least 1 special char.
+  if (!password) throw `Error: must supply a ${varName}`;
+  if (typeof password !== 'string') throw `Error: ${varName} must be a string!`;
+  password = password.trim();
+  if (password.length === 0) throw `Error: must supply a ${varName}`;
   return password;
 }
 
@@ -80,11 +90,12 @@ const checkName = (name, varName) => {
 }
 
 const checkAge = (age, varName) => {
+  if (!age) throw `Error: You must supply an ${varName}!`;  
   if (typeof age !== 'number') {
     throw `${varName || 'provided variable'} is not a number`;
   }
   if (isNaN(age)) {
-    throw `${varName || 'provided variable'} is NaN`;
+    throw `${varName || 'provided variable'} is not a number`;
   }
   if (!Number.isInteger(age)) {  // if a decimal
     throw `${varName || 'provided variable'} is a decimal`;
@@ -92,5 +103,5 @@ const checkAge = (age, varName) => {
   return age;
 }
 
-export {checkId, checkString, checkEmail, checkPassword, checkName, checkAge};
+export {checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge};
 

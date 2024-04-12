@@ -8,9 +8,9 @@ import privateRoutes from './private.js';
 import {static as staticDir} from 'express';
 
 const constructorMethod = (app) => {
-  app.use('/announcements', announcementRoutes);
-  app.use('/groceryList', groceryListRoutes);
-  app.use('/household', householdRoutes);
+  app.use('/private/announcements', announcementRoutes);
+  app.use('/private/groceryList', groceryListRoutes);
+  app.use('/private/household', householdRoutes);
   app.use('/users', userRoutes);
   app.use('/private', privateRoutes);
   app.use('/public', staticDir('public'));

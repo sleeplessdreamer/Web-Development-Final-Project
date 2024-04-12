@@ -2,16 +2,22 @@
 <h1>Sign Up</h1>
 <form action="/users/signup" method="POST" class="signup-form">
   <label for="signup">
-    <input type="text" name="firstName" placeholder="First Name" value="{{firstName}}" id="firstName">
-    <input type="text" name="lastName" placeholder="Last Name" value="{{lastName}}" id="firstName">
-    <input type="text" name="email" placeholder="Email Address" value="{{email}}" id="email">
-    <input type="text" name="password" placeholder="Password" value="{{password}}" id="password">
-    <input type="number" name="age" min="13" max="120" placeholder="Age" value="{{age}}" id="age">
+    <input type="text" name="firstName" placeholder="First Name" value="{{user.firstName}}" id="firstName">
+    <input type="text" name="lastName" placeholder="Last Name" value="{{user.lastName}}" id="firstName">
+    <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
+    <input type="text" name="password" placeholder="Password" value="{{user.password}}" id="password">
+    <input type="number" name="age" min="13" max="120" placeholder="Age" value="{{user.age}}" id="age">
   </label>
   <input type="submit" id="submit-button">
   <input type="reset" id="reset-button">
 </form>
 {{#if hasErrors}}
-<p class="error"> {{errors}} </p>
-{{/if}}
+  <ul class="error-list">
+    {{#each errors}}
+    <li>
+      {{this}}
+    </li>
+    {{/each}}
+  </ul>
+  {{/if}}
 </article>
