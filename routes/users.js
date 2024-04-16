@@ -136,7 +136,7 @@ router.route('/login')
       // Check if email and password matches
       try {
         let compare = await bcrypt.compare(password, existingUser[0].hashedPassword);
-        if (!compare) throw `Error: Incorrect Password`;
+        if (!compare) throw `Error: Password is Incorrect`;
       } catch (e) {
         errors.push(e);
       }

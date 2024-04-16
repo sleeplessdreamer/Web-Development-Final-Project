@@ -10,7 +10,6 @@ router.get('/', async (req, res) => {
     res.redirect('/private/household');
     return;
   } else if (user.householdName.length !== 0){
-    console.log('hello 2');
     res.redirect('/private/household');
     return;
   }

@@ -62,7 +62,8 @@ const checkPasswordSignUp = (password, varName) => {
   if (!isNaN(password)) // only numbers
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
   // https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
-  let regEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
   if (!password.match(regEx))
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
   return password;
