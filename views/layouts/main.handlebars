@@ -7,8 +7,15 @@
 </head>
 <body>
     <header>
-        <a href="/users/login">Log In</a>
-        <a href="/users/signup">Sign Up</a>
+        {{#if authenticated}}
+            <a href="/users/logout">Log Out</a>
+            <a href="/household/info">Home</a>
+            <a href="/users/profile">My Profile</a>
+        {{else}}
+            <a href="/users/login">Log In</a>
+            <a href="/users/signup">Sign Up</a>
+            <a href="/">Welcome</a>
+        {{/if}}
     </header>
     <main>
         {{{body}}}
