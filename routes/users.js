@@ -3,7 +3,6 @@ const router = Router();
 import { userData } from '../data/index.js';
 import { checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
-import bcrypt from 'bcrypt';
 
 router.route('/')
   .get(async (req, res) => {
@@ -13,8 +12,9 @@ router.route('/')
 // Render Signup Page
 router.route('/signup')
   .get(async (req, res) => {
-    res.render('landing/signup', { pageTitle: 'Sign Up' });
-    return;
+    res.render('landing/signup', {
+      pageTitle: 'Sign Up',
+      authenticated: false});
   })
   .post(async (req, res) => {
     // request body
@@ -74,17 +74,32 @@ router.route('/signup')
       const user = await userData.addUser(email, password, firstName, lastName, age);
       // Create Account Successfull set req.session.user
       req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName }
-      res.redirect('/private'); // redirect to private
-      return;
+      const authenticated = req.session.user;
+      if (authenticated && authenticated.householdName.length === 0) {
+        return res.redirect('/household/new');
+      }
+      else if (authenticated && authenticated.householdName.length !== 0) {
+        return res.redirect('/household/info');
+      }
     } catch (e) {
-      res.status(404).json({ error: e });
+      let errors = [];
+      errors.push(e);
+      res.status(400).render("login", {
+        pageTitle: "Login",
+        errors: errors,
+        hasErrors: true,
+        user: newUserData,
+        authenticated: false
+      });
+      return;
     }
   })
 
 router.route('/login')
   .get(async (req, res) => {
-    res.render('landing/login', { pageTitle: 'Log In' });
-    return;
+    res.render('landing/login', { 
+      pageTitle: 'Log In',
+      authenticated: false});
   })
   .post(async (req, res) => {
     // Get Request Body
@@ -107,58 +122,60 @@ router.route('/login')
     // If any errors then display them
     if (errors.length > 0) {
       res.status(400).render('landing/login', {
+        pageTitle: "Login",
         errors: errors,
         hasErrors: true,
         user: userLogInData
       });
       return;
     }
-    // Get Info About User From Email
-    const userCollection = await users();
-    const existingUser = await userCollection.find({ email: email }).toArray();
     try {
-      // Check if Email is in Use
-      if (existingUser.length === 0) throw `Error: No Account Exists With That Email`;
+      // Login Successfull set req.session.user
+      const user = await userData.logInUser(email, password);
+      req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName }
+      const authenticated = req.session.user;
+      if (authenticated && authenticated.householdName.length === 0) {
+        return res.redirect('/household/new');
+      }
+      else if (authenticated && authenticated.householdName.length !== 0) {
+        return res.redirect('/household/info');
+      }
     } catch (e) {
+      let errors = [];
       errors.push(e);
-    }
-    // If any errors then display them
-    if (errors.length > 0) {
-      res.status(400).render('landing/login', {
+      res.status(400).render("landing/login", {
+        pageTitle: "Login",
         errors: errors,
         hasErrors: true,
-        user: userLogInData
+        user: userLogInData,
+        authenticated: false
       });
       return;
     }
-    // If user supplied both an email and password
-    if (email !== "" && password !== "") {
-      // Check if email and password matches
-      try {
-        let compare = await bcrypt.compare(password, existingUser[0].hashedPassword);
-        if (!compare) throw `Error: Password is Incorrect`;
-      } catch (e) {
-        errors.push(e);
-      }
-      // If any errors then display them
-      if (errors.length > 0) {
-        res.status(400).render('landing/login', {
-          errors: errors,
-          hasErrors: true,
-          user: userLogInData
-        });
-        return;
-      }
-      try {
-        // Login Successfull set req.session.user
-        req.session.user = { firstName: existingUser[0].firstName, lastName: existingUser[0].lastName, userId: existingUser[0]._id, householdName: existingUser[0].householdName }
-        res.redirect('/private');
-        return;
-      } catch (e) {
-        res.status(404).json({ error: e });
-      }
-    }
-  })
+  });
+
+  router.route('/profile')
+  .get(async (req, res) => {
+    const user = req.session.user;
+    res.render('users/profile', {
+      pageTitle: 'My Profile',
+      authenticated: true,
+      user});
+  });
+
+  router.route('/logout').get(async (req, res) => {
+    //code here for GET
+    res.render('users/logout', {
+      pageTitle: 'Logout', 
+      firstName: req.session.user.firstName, 
+      lastName: req.session.user.lastName,
+      themePreference: req.session.user.themePreference,
+      authenticated: false
+    });
+    req.session.destroy();
+  });
+
+
 
 
 

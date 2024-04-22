@@ -1,12 +1,21 @@
-<article class="form">
-<h1>Sign Up</h1>
+<div class="form">
+<h1>{{pageTitle}}</h1>
+<p>Please Enter Details Here:</p>
 <form action="/users/signup" method="POST" class="signup-form">
-  <label for="signup">
+  <label for="firstName">
     <input type="text" name="firstName" placeholder="First Name" value="{{user.firstName}}" id="firstName">
+  </label>
+  <label for="lastName">
     <input type="text" name="lastName" placeholder="Last Name" value="{{user.lastName}}" id="firstName">
+  </label>
+  <label for="email">
     <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
-    <input type="text" name="password" placeholder="Password" value="{{user.password}}" id="password">
-    <input type="number" name="age" min="13" max="120" placeholder="Age" value="{{user.age}}" id="age">
+  </label>
+  <label for="password">
+    <input type="password" name="password" placeholder="Password" value="{{user.password}}" id="password">
+  </label>
+  <label for="age">
+    <input type="number" name="age" min="13" placeholder="Age" value="{{user.age}}" id="age">
   </label>
   <input type="submit" id="submit-button">
   <input type="reset" id="reset-button">
@@ -20,4 +29,4 @@
     {{/each}}
   </ul>
   {{/if}}
-</article>
+</div>

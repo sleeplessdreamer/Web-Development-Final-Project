@@ -71,6 +71,20 @@ const exportedMethods = {
     updatedInfo._id = updatedInfo._id.toString();
     return updatedInfo;
   },
+  async getHouseholdByName(householdName) {
+    householdName = checkString(householdName, 'Household Name');
+    const householdCollection = await household();
+    const house = await householdCollection.find({householdName: householdName}).toArray();
+    if (!house) throw `Error: Household not found`;
+    return house[0];
+  },
+
+  async getAllUsersByHousehold(householdName) {
+    householdName = checkString(householdName, "Household Name");
+    let members = await this.getHouseholdByName(householdName);
+    members = members.members; // just get the members    
+    return members;
+  }
 
   };
   export default exportedMethods;

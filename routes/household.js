@@ -1,87 +1,100 @@
 import {Router} from 'express';
 const router = Router();
 import {householdData} from '../data/index.js';
-
+import { checkString } from '../validation.js';
 router.get('/', async (req, res) => {
-  const user = req.session.user;
-  if (!user) {
-    throw `Error: You Must Be Logged In to Access`;
-  }
-  // Redirect to Correct Place depending on if they have a household or not
-  if (user.householdName.length === 0) {
-    res.redirect('/private/household/new');
-    return;
-  } else if (user.householdName.length !== 0) {
-    res.redirect('/private/household/info');
-    return;
-  }
 });
 
-router
-  .get('/new', async (req, res) => {
+router.route('/new')
+  .get(async (req, res) => {
     const user = req.session.user;
-    if (!user) {
-      throw `Error: You Must Be Logged In to Access`;
-    }
-    // Redirect to Correct Place depending on if they have a household or not
-    if (user.householdName.length !== 0) {
-      res.redirect('/private/household/info');
-      return;
-    }
-    res.render('household/new', {pageTitle: 'New', user});
-    return;
+    res.render('household/new', {
+      pageTitle: 'New Household Name', 
+      user,
+      authenticated: true});
 })
   .post(async(req,res) => {
 
 });
 
-router
-  .get('/info', async (req, res) => {
+router.route('/info')
+   .get(async (req, res) => {
     const user = req.session.user;
-    if (!user) {
-      throw `Error: You Must Be Logged In to Access`;
+    let errors = [];
+    try {
+      const members = await householdData.getAllUsersByHousehold(user.householdName);
+      res.render('household/info', {
+        pageTitle: 'Info', 
+        user,
+        authenticated: true,
+        members: members});
+    } catch (e) {
+      errors.push(e);
+      res.render('error', {
+        pageTitle: 'Info', 
+        user,
+        authenticated: true,
+        errors: errors});
     }
-    // Redirect to Correct Place depending on if they have a household or not
-    if (user.householdName.length === 0) {
-      res.redirect('/private/household/new');
-      return;
-    }
-    res.render('household/info', {pageTitle: 'Info', user});
-    return;
 });
 
-
-router
-  .get('/create', async (req, res) => {
+router.route('/create') 
+  .get(async (req, res) => {
     const user = req.session.user;
-    if (!user) {
-      throw `Error: You Must Be Logged In to Access`;
-    }
-    // Redirect to Correct Place depending on if they have a household or not
-    if (user.householdName.length !== 0) {
-      res.redirect('/private/household/info');
-      return;
-    }
-    res.render('household/create', {pageTitle: 'Create Hosehold', user});
-    return;
+    res.render('household/create', {
+      pageTitle: 'Create Hosehold', 
+      user,
+      authenticated: true});
 });
 
-router
-  .get('/join', async (req, res) => {
+router.route('/join')
+  .get(async (req, res) => {
     const user = req.session.user;
-    if (!user) {
-      throw `Error: You Must Be Logged In to Access`;
-    }
-    // Redirect to Correct Place depending on if they have a household or not
-    if (user.householdName.length !== 0) {
-      res.redirect('/private/household/info');
-      return;
-    }
-    res.render('household/join', {pageTitle: 'Join Hosehold', user});
-    return;
+    res.render('household/join', 
+    {pageTitle: 'Join Hosehold', 
+    user,
+    authenticated: true});
 })
   .post(async(req,res) => {
-
+    // Get Request Body
+    const currentUser = req.session.user;
+    const joinData = req.body;
+    let householdName = joinData.householdName;
+    let errors = [];
+    // Error Checking
+    try {
+      householdName = checkString(householdName, "Household Name");
+    } catch (e) {
+      errors.push(e);
+    }
+    // If any errors then display them
+    if (errors.length > 0) {
+      res.status(400).render('household/join', {
+        pageTitle: "Join Household",
+        errors: errors,
+        hasErrors: true,
+        user: joinData,
+        authenticated: true
+      });
+      return;
+    }
+    try {
+      // Login Successfull set req.session.user
+      const house = await householdData.joinHousehold(householdName, currentUser.userId);
+      currentUser.householdName = house.householdName; // update req.session.user too
+      return res.redirect('/household/info');
+    } catch (e) {
+      let errors = [];
+      errors.push(e);
+      res.status(400).render("household/join", {
+        pageTitle: "Join Household",
+        errors: errors,
+        hasErrors: true,
+        user: joinData,
+        authenticated: true
+      });
+      return;
+    }
 });
 
 export default router;

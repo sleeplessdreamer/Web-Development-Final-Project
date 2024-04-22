@@ -63,7 +63,6 @@ const checkPasswordSignUp = (password, varName) => {
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
   // https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
   let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-
   if (!password.match(regEx))
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, & contains at least one special character`;
   return password;
@@ -82,11 +81,12 @@ const checkName = (name, varName) => {
   if (!name) throw `Error: You must supply a ${varName}!`;
   if (typeof name !== 'string') throw `Error: ${varName} must be a string!`;
   name = name.trim();
-  if (name.length === 0)
-    throw `Error: ${varName} cannot be an empty string or string with just spaces`;
-  if (!isNaN(name))
-    throw `Error: ${name} is not a valid value for ${varName} as it only contains digits`;
-  name = name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase();
+  if (name.length === 0) throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+  if (name.length < 2 || name.length > 25) throw `Error: ${varName} must be between 2-25 chars`
+  if (!isNaN(name)) throw `Error: ${name} is not a valid value for ${varName} as it only contains digits`;
+  let regEx = /^[a-zA-Z]+(?:-[a-zA-Z]+)*$/; // allows for letters, spaces, and hyphens
+  if (!name.match(regEx)) throw `Error: invalid ${varName}`;
+  name = name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase(); // store in database
   return name;
 }
 

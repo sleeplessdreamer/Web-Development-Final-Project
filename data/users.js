@@ -1,5 +1,5 @@
-import { users } from '../config/mongoCollections.js'; // import collection
-import { checkEmail, checkPasswordSignUp, checkName, checkAge, checkId } from '../validation.js'
+import { household, users } from '../config/mongoCollections.js'; // import collection
+import { checkEmail, checkPasswordSignUp, checkName, checkAge, checkId, checkPasswordLogin, checkString } from '../validation.js'
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 
@@ -60,11 +60,10 @@ const exportedMethods = {
     newUser._id = newUser._id.toString(); // convert to string
     return newUser;
   },
-/** Can get rid of this
   async logInUser(email, password) {
     // Make sure it is a valid email
     email = checkEmail(email, "Email Address");
-
+    password = checkPasswordLogin(password, "Password");
     // Check email is in use
     const userCollection = await users();
     const user = await userCollection.find({ email: email }).toArray();
@@ -74,10 +73,9 @@ const exportedMethods = {
     let compare = await bcrypt.compare(password, user[0].hashedPassword);
     if (!compare) throw `Error: Incorrect Password`;
 
-    // return all info about user
     return user[0];
   },
-*/
+
   async getAllUsers() {
     const userCollection = await users();
     let userList = await userCollection
