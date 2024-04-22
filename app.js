@@ -19,9 +19,7 @@ app.use(
   })
 );
 /* This middleware will apply to the root route / 
-(note, a middleware applying to the root route is the same as a middleware that fires for every request) 
-and will do one of the following: 
-A. This middleware will log to your console for every request made to the server, with the following information:
+Keeping this here for future error checking
 */
 app.use('/', async (req, res, next) => {
   let authenticated;
@@ -37,7 +35,6 @@ app.use('/', async (req, res, next) => {
     authenticated
   );
   /*
-  After you log the request info in step A,  
   if the user is authenticated 
   AND they have a household, 
   the middleware function will 
@@ -65,7 +62,8 @@ app.use('/', async (req, res, next) => {
   }
 });
 app.use('/users', async (req, res, next) => {
-  if (req.path === '/users') {
+  const authenticated = req.session.user;
+  if (req.path === '/') {
     if (!authenticated) {
       return res.redirect('/users/login');
     } else if (authenticated && authenticated.householdName !== 0) {
@@ -90,7 +88,7 @@ If the user is NOT authenticated,
 you will allow them to get through to the GET /login route. 
 A logged in user should never be able to access the login form.
 */
-app.use('/login', (req, res, next) => {
+app.use('/users/login', (req, res, next) => {
   const authenticated = req.session.user;
   if (authenticated) {
     if (authenticated.householdName.length === 0) {
@@ -115,7 +113,7 @@ If the user is NOT authenticated,
 you will allow them to get through to the GET /signup route. 
 A logged in user should never be able to access the registration form.
 */
-app.use('/signup', async (req, res, next) => {
+app.use('/users/signup', async (req, res, next) => {
   const authenticated = req.session.user;
   if (authenticated) {
     if (authenticated.householdName.length === 0) {
@@ -139,7 +137,8 @@ If the user is NOT authenticated,
 you will allow them to get through to the GET /signup route. 
 */
 app.use('/household', async (req, res, next) => {
-  if (req.path === '/household') {
+  const authenticated = req.session.user;
+  if (req.path === '/') {
     if (!authenticated) {
       return res.redirect('/users/login');
     } else if (authenticated && authenticated.householdName !== 0) {
@@ -163,7 +162,7 @@ you will redirect them to /household/info route.
 If the user is logged in, AND does NOT have a householdName
 the middleware will "fall through" to the next route calling the next() callback.
 */
-app.use('/new', async (req, res, next) => {
+app.use('/household/new', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
@@ -184,7 +183,7 @@ If the user is logged in AND the user has a householdName,
 the middleware will "fall through" to the next route calling the next() callback.
 ONLY USERS SHOULD BE ABLE TO ACCESS THE /household ROUTE!
 */
-app.use('/info', async (req, res, next) => {
+app.use('/household/info', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
@@ -204,7 +203,7 @@ you will redirect them to /household/info route.
 If the user is logged in, AND does NOT have a householdName
 the middleware will "fall through" to the next route calling the next() callback.
 */
-app.use('/create', async (req, res, next) => {
+app.use('/household/create', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
@@ -224,7 +223,7 @@ you will redirect them to /household/info route.
 If the user is logged in, AND does NOT have a householdName
 the middleware will "fall through" to the next route calling the next() callback.
 */
-app.use('/join', async (req, res, next) => {
+app.use('/household/join', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
