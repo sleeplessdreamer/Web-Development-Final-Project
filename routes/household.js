@@ -13,16 +13,13 @@ router.route('/new')
       user,
       authenticated: true});
 })
-  .post(async(req,res) => {
-
-});
 
 router.route('/info')
    .get(async (req, res) => {
     const user = req.session.user;
     let errors = [];
     try {
-      const members = await householdData.getAllUsersByHousehold(user.householdName);
+      const members = await householdData.getAllUsersByHousehold(user.householdName, user.userId);
       res.render('household/info', {
         pageTitle: 'Info', 
         user,
@@ -45,6 +42,45 @@ router.route('/create')
       pageTitle: 'Create Hosehold', 
       user,
       authenticated: true});
+})
+  .post(async(req,res) => {
+    const currentUser = req.session.user;
+    const createData = req.body;
+    let householdName = createData.householdName;
+    let errors = [];
+    // Error Checking
+    try {
+      householdName = checkString(householdName, "Household Name");
+    } catch (e) {
+      errors.push(e);
+    }
+    // If any errors then display them
+    if (errors.length > 0) {
+      res.status(400).render('household/create', {
+        pageTitle: "Create Household",
+        errors: errors,
+        hasErrors: true,
+        user: createData,
+        authenticated: true
+      });
+      return;
+    }
+    try {
+      const house = await householdData.createHousehold(householdName, currentUser.userId);
+      currentUser.householdName = house.householdName; // update req.session.user too
+      return res.redirect('/household/info');
+    } catch (e) {
+      let errors = [];
+      errors.push(e);
+      res.status(400).render("household/create", {
+        pageTitle: "Create Household",
+        errors: errors,
+        hasErrors: true,
+        user: createData,
+        authenticated: true
+      });
+      return;
+    }
 });
 
 router.route('/join')

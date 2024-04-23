@@ -25,7 +25,6 @@ router.route('/signup')
     let password = newUserData.password;
     let age = parseInt(newUserData.age);
     let errors = [];
-
     // Error Checking
     try {
       firstName = checkName(firstName, "First Name");
@@ -60,13 +59,13 @@ router.route('/signup')
     } catch (e) {
       errors.push(e);
     }
-
     // If any errors return fields already supplied with errors
     if (errors.length > 0) {
       res.status(400).render('landing/signup', {
         errors: errors,
         hasErrors: true,
-        user: newUserData
+        user: newUserData,
+        authenticated: false
       });
       return;
     }

@@ -66,9 +66,9 @@ app.use('/users', async (req, res, next) => {
   if (req.path === '/') {
     if (!authenticated) {
       return res.redirect('/users/login');
-    } else if (authenticated && authenticated.householdName !== 0) {
+    } else if (authenticated && authenticated.householdName.length !== 0) {
       return res.redirect('/household/info');
-    } else if (authenticated && authenticated.householdName === 0) {
+    } else if (authenticated && authenticated.householdName.length === 0) {
       return res.redirect('/household/new');
     } else {
       next();
@@ -141,9 +141,9 @@ app.use('/household', async (req, res, next) => {
   if (req.path === '/') {
     if (!authenticated) {
       return res.redirect('/users/login');
-    } else if (authenticated && authenticated.householdName !== 0) {
+    } else if (authenticated && authenticated.householdName.length !== 0) {
       return res.redirect('/household/info');
-    } else if (authenticated && authenticated.householdName === 0) {
+    } else if (authenticated && authenticated.householdName.length === 0) {
       return res.redirect('/household/new');
     } else {
       next();
@@ -166,7 +166,7 @@ app.use('/household/new', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
-  } else if (authenticated && authenticated.householdName !== 0) {
+  } else if (authenticated && authenticated.householdName.length !== 0) {
     return res.redirect('/household/info');
   } else {
     next();
@@ -187,7 +187,7 @@ app.use('/household/info', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
-  } else if (authenticated && authenticated.householdName === 0) {
+  } else if (authenticated && authenticated.householdName.length === 0) {
     return res.redirect('/household/new');
   } else {
     next();
@@ -207,7 +207,7 @@ app.use('/household/create', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
-  } else if (authenticated && authenticated.householdName !== 0) {
+  } else if (authenticated && authenticated.householdName.length !== 0) {
     return res.redirect('/household/info');
   } else {
     next();
@@ -227,7 +227,7 @@ app.use('/household/join', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
-  } else if (authenticated && authenticated.householdName !== 0) {
+  } else if (authenticated && authenticated.householdName.length !== 0) {
     return res.redirect('/household/info');
   } else {
     next();
