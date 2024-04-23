@@ -3,7 +3,7 @@ const router = Router();
 import { userData } from '../data/index.js';
 import { checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
-
+import xss from 'xss';
 router.route('/')
   .get(async (req, res) => {
 
@@ -14,7 +14,9 @@ router.route('/signup')
   .get(async (req, res) => {
     res.render('landing/signup', {
       pageTitle: 'Sign Up',
-      authenticated: false});
+      authenticated: false,
+      household: false
+    });
   })
   .post(async (req, res) => {
     // request body
@@ -65,7 +67,8 @@ router.route('/signup')
         errors: errors,
         hasErrors: true,
         user: newUserData,
-        authenticated: false
+        authenticated: false,
+        household: false,
       });
       return;
     }
@@ -84,11 +87,12 @@ router.route('/signup')
       let errors = [];
       errors.push(e);
       res.status(400).render("login", {
-        pageTitle: "Login",
+        pageTitle: "Log In",
         errors: errors,
         hasErrors: true,
         user: newUserData,
-        authenticated: false
+        authenticated: false,
+        household: false
       });
       return;
     }
@@ -98,7 +102,8 @@ router.route('/login')
   .get(async (req, res) => {
     res.render('landing/login', { 
       pageTitle: 'Log In',
-      authenticated: false});
+      authenticated: false,
+      household: false});
   })
   .post(async (req, res) => {
     // Get Request Body
@@ -121,10 +126,12 @@ router.route('/login')
     // If any errors then display them
     if (errors.length > 0) {
       res.status(400).render('landing/login', {
-        pageTitle: "Login",
+        pageTitle: "Log In",
         errors: errors,
         hasErrors: true,
-        user: userLogInData
+        user: userLogInData,
+        authenticated: false,
+        household: false
       });
       return;
     }
@@ -143,11 +150,12 @@ router.route('/login')
       let errors = [];
       errors.push(e);
       res.status(400).render("landing/login", {
-        pageTitle: "Login",
+        pageTitle: "Log In",
         errors: errors,
         hasErrors: true,
         user: userLogInData,
-        authenticated: false
+        authenticated: false,
+        household: false
       });
       return;
     }
@@ -156,20 +164,33 @@ router.route('/login')
   router.route('/profile')
   .get(async (req, res) => {
     const user = req.session.user;
+    let household = false;
+    if (user.householdName.length !== 0) {
+      household = true;
+    }
+    console.log(household);
     res.render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,
-      user});
+      user,
+      household: household
+    });
   });
 
   router.route('/logout').get(async (req, res) => {
     //code here for GET
+    const user = req.session.user;
+    let household = false;
+    if (user.householdName.length !== 0) {
+      household === true;
+    }
     res.render('users/logout', {
       pageTitle: 'Logout', 
       firstName: req.session.user.firstName, 
       lastName: req.session.user.lastName,
       themePreference: req.session.user.themePreference,
-      authenticated: false
+      authenticated: false,
+      household: household
     });
     req.session.destroy();
   });
