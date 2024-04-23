@@ -1,14 +1,16 @@
-<h1>Welcome Back {{user.firstName}}!</h1>
-{{#if user.shopper}}
-    <p>You are currently this week's shopper.</p>
-{{else}}
-    <p>Phew! You're not this week's shopper.</p>
-{{/if}}
-<p>Here is everyone in your household, <strong>{{user.householdName}}.</strong></p>
-<ul class="members-list">
-    {{#each members}}
-    <li>
-        {{this}}
-    </li>
-    {{/each}}
-</ul>
+<div class="household-info">
+    <h1>The {{user.householdName}} Household</h1>
+    {{#if user.shopper}}
+        <p>You are currently this week's shopper.</p>
+    {{else}}
+        <p>Phew! You're not this week's shopper.</p>
+    {{/if}}
+    <ul class="members-list">
+    <p><strong>Members</strong></p>
+        {{#each members}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+</div>

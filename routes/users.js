@@ -75,7 +75,7 @@ router.route('/signup')
     try {
       const user = await userData.addUser(email, password, firstName, lastName, age);
       // Create Account Successfull set req.session.user
-      req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName }
+      req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName, email: user.email, age: user.age }
       const authenticated = req.session.user;
       if (authenticated && authenticated.householdName.length === 0) {
         return res.redirect('/household/new');
@@ -138,7 +138,7 @@ router.route('/login')
     try {
       // Login Successfull set req.session.user
       const user = await userData.logInUser(email, password);
-      req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName }
+      req.session.user = { firstName: user.firstName, lastName: user.lastName, userId: user._id, householdName: user.householdName, email: user.email, age: user.age }
       const authenticated = req.session.user;
       if (authenticated && authenticated.householdName.length === 0) {
         return res.redirect('/household/new');
@@ -168,7 +168,6 @@ router.route('/login')
     if (user.householdName.length !== 0) {
       household = true;
     }
-    console.log(household);
     res.render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,

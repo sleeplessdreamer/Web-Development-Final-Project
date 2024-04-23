@@ -1,0 +1,40 @@
+<h1>{{pageTitle}}</h1>
+<table class="profile-user">
+    <tr>
+        <th>First Name</th>
+        <td>{{user.firstName}}</td>
+        <th>Last Name</th>
+        <td>{{user.lastName}}</td>
+    </tr>
+    <tr>
+        <th>Email Address</th>
+        <td>{{user.email}}</td>
+        <th>Age</th>
+        <td>{{user.age}}</td>
+    </tr>
+<table>
+</div>
+<h3>My Grocery Lists</h3>
+<ul class="grocery-lists">
+    {{#each user.groceryLists}}
+    <li>
+        {{this}}
+    </li>
+    {{/each}}
+</ul>
+<h3>My Comments</h3>
+<ul class="comment-lists">
+    {{#each user.comments}}
+    <li>
+        {{this}}
+    </li>
+    {{/each}}
+</ul>
+<h3>My Announcements</h3>
+<ul class="announcement-lists">
+    {{#each user.announcements}}
+    <li>
+        {{this}}
+    </li>
+    {{/each}}
+</ul>

@@ -14,24 +14,48 @@ main {
 }
 
 header {
+    background-color: #fcebc4;
     padding-bottom: 10px;
     width: 100%;
     border-bottom: 2px solid #877b5d;
     overflow: hidden;
 }
 
+.form, .landing-view, .new-household, .profile-user, .household-info {
+    margin: auto;
+    text-align: center;
+}
+
+.members-list, .error-list {
+    text-align: left;
+}
+
+.profile-user th {
+    padding: 10px;
+    text-align: left;
+}
+
+.profile-user td {
+    border: 1px solid;
+    text-align: left;
+    padding: 10px;
+    width: 250px;
+    background-color: white;
+    border-radius: 5px;
+}
+
 .navigation {
+    top: 0;
+    padding-top: 25px;
     overflow: hidden;
     position: fixed;
     width: 100%;
+    background-color: #fcebc4;
 }
 
-.navigation a {
-    float: left;
-    display: block;
+.new-household a {
     color: white;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-right: 10px;
     text-align: center;
     padding: 15px 18px;
     text-decoration: none;
@@ -40,7 +64,21 @@ header {
     border-radius: 5px;
 }
 
-.navigation a:hover {
+
+.navigation a {
+    float: left;
+    display: block;
+    color: white;
+    margin-right: 10px;
+    text-align: center;
+    padding: 15px 18px;
+    text-decoration: none;
+    font-size: 18px;
+    background: #4eaf73;
+    border-radius: 5px;
+}
+
+.navigation a:hover, .new-household a:hover {
     background: #3d8b5b;
 }
 
