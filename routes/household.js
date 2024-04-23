@@ -2,6 +2,7 @@ import {Router} from 'express';
 const router = Router();
 import {householdData} from '../data/index.js';
 import { checkString } from '../validation.js';
+
 router.get('/', async (req, res) => {
 });
 
@@ -11,7 +12,9 @@ router.route('/new')
     res.render('household/new', {
       pageTitle: 'New Household Name', 
       user,
-      authenticated: true});
+      authenticated: true,
+      household: false,
+    });
 })
 
 router.route('/info')
@@ -24,13 +27,16 @@ router.route('/info')
         pageTitle: 'Info', 
         user,
         authenticated: true,
-        members: members});
+        members: members,
+        household: true
+      });
     } catch (e) {
       errors.push(e);
       res.render('error', {
         pageTitle: 'Info', 
         user,
         authenticated: true,
+        household: true,
         errors: errors});
     }
 });
@@ -41,7 +47,9 @@ router.route('/create')
     res.render('household/create', {
       pageTitle: 'Create Hosehold', 
       user,
-      authenticated: true});
+      authenticated: true,
+      household: false,
+    });
 })
   .post(async(req,res) => {
     const currentUser = req.session.user;
@@ -61,7 +69,8 @@ router.route('/create')
         errors: errors,
         hasErrors: true,
         user: createData,
-        authenticated: true
+        authenticated: true,
+        household: false
       });
       return;
     }
@@ -77,7 +86,8 @@ router.route('/create')
         errors: errors,
         hasErrors: true,
         user: createData,
-        authenticated: true
+        authenticated: true,
+        household: false
       });
       return;
     }
@@ -89,7 +99,9 @@ router.route('/join')
     res.render('household/join', 
     {pageTitle: 'Join Hosehold', 
     user,
-    authenticated: true});
+    authenticated: true,
+    household: false,
+  });
 })
   .post(async(req,res) => {
     // Get Request Body
@@ -110,7 +122,8 @@ router.route('/join')
         errors: errors,
         hasErrors: true,
         user: joinData,
-        authenticated: true
+        authenticated: true,
+        household: false
       });
       return;
     }
@@ -127,7 +140,8 @@ router.route('/join')
         errors: errors,
         hasErrors: true,
         user: joinData,
-        authenticated: true
+        authenticated: true,
+        household: false
       });
       return;
     }
