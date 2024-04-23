@@ -13,7 +13,7 @@
 ## Packages
 Must be installed first:
 ```
-npm i bcryptjs
+npm i bcrypt
 npm i cookie-parser
 npm i express
 npm iexpress-handlebars
