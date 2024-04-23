@@ -1,0 +1,90 @@
+body {
+    margin: auto;
+    padding: 25px;
+    background: #fcebc4;
+    font-family: Roboto;
+    font-size: 15pt;
+    color: black;
+}
+
+main {
+    padding: 25px;
+    max-width: 75%;
+    margin: auto;
+}
+
+header {
+    padding-bottom: 10px;
+    width: 100%;
+    border-bottom: 2px solid #877b5d;
+    overflow: hidden;
+}
+
+.navigation {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+.navigation a {
+    float: left;
+    display: block;
+    color: white;
+    margin-left: 5px;
+    margin-right: 5px;
+    text-align: center;
+    padding: 15px 18px;
+    text-decoration: none;
+    font-size: 18px;
+    background: #4eaf73;
+    border-radius: 5px;
+}
+
+.navigation a:hover {
+    background: #3d8b5b;
+}
+
+.landing-view {
+    margin-top: 60px;
+    position: static;
+    padding: 20px;
+    background-color: #edd9ab;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #78ba7c;
+    margin-bottom: 5px;
+    margin-top: 60px;
+    position: static;
+}
+
+#submit-button, #reset-button {
+    background-color: #4eaf73;
+    color: white;
+    margin-left: 5px;
+    margin-right: 5px;
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 14px;
+}
+
+#submit-button:hover, #reset-button:hover {
+    background: #3d8b5b;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+#firstName, #lastName, #email, #password, #username, #age, #householdName {
+    border-radius: 5px;
+    border-width: 1px;  
+    padding: 10px; 
+    margin: 5px;   
+}
