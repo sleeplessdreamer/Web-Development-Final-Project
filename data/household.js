@@ -1,4 +1,4 @@
-import { checkId, checkString } from '../validation.js'
+import { checkId, checkString, checkHouseholdName } from '../validation.js'
 import { household, users, announcements } from '../config/mongoCollections.js'; // import collection
 import userData from './users.js'
 import { ObjectId } from 'mongodb';
@@ -6,9 +6,10 @@ import { ObjectId } from 'mongodb';
 const exportedMethods = {
   async createHousehold(householdName, userId) {
     // Error Checking
-    householdName = checkString(householdName, "Household Name")
-    userId = checkId(userId, "User ID")
+    householdName = checkHouseholdName(householdName, "Household Name");
+    userId = checkId(userId, "User ID");
 
+    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
     // Check if Household name already exists
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
@@ -53,8 +54,10 @@ const exportedMethods = {
   },
 
   async joinHousehold(householdName, userId) {
-    householdName = checkString(householdName, "Household Name");
+    householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User Id");
+
+    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
 
     //householdName = householdName.toLowerCase(); // case in-sensitive
     const householdCollection = await household();
@@ -120,7 +123,7 @@ const exportedMethods = {
     return updatedInfo; // return household with new member
   },
   async joinAnnouncement(householdName, userId) {
-    householdName = checkString(householdName, "Household Name");
+    householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User Id");
 
     // Get name of user who is joining household
@@ -172,7 +175,7 @@ const exportedMethods = {
   },
 
   async getHouseholdByName(householdName) {
-    householdName = checkString(householdName, 'Household Name');
+    householdName = checkHouseholdName(householdName, 'Household Name');
     const householdCollection = await household();
     const house = await householdCollection.find({ householdName: householdName }).toArray();
     if (!house) throw `Error: Household not found`;
@@ -180,7 +183,7 @@ const exportedMethods = {
   },
 
   async getAllUsersByHousehold(householdName) {
-    householdName = checkString(householdName, "Household Name");
+    householdName = checkHouseholdName(householdName, "Household Name");
     let members = await this.getHouseholdByName(householdName);
     members = members.members; // just get the members    
     return members;

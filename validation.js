@@ -23,6 +23,16 @@ const checkString = (strVal, varName) => {
   return strVal;
 }
 
+const checkHouseholdName = (strVal, varName) => {
+  if (!strVal) throw `Error: You must supply a ${varName}!`;
+  if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
+  strVal = strVal.trim();
+  if (strVal.length === 0) throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+  if (!isNaN(strVal)) throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
+  if (strVal.includes(' ')) throw `Error: ${strVal} cannot contain spaces`;
+  return strVal;
+}
+
 const checkStringArray = (arr, varName) => {
   //We will allow an empty array for this,
   //if it's not empty, we will make sure all tags are strings
@@ -104,5 +114,5 @@ const checkAge = (age, varName) => {
   return age;
 }
 
-export {checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge};
+export {checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge, checkHouseholdName};
 

@@ -1,7 +1,7 @@
 import {Router} from 'express';
 const router = Router();
 import {announcementData, householdData} from '../data/index.js';
-import { checkString } from '../validation.js';
+import { checkHouseholdName } from '../validation.js';
 
 router.get('/', async (req, res) => {
 });
@@ -58,7 +58,7 @@ router.route('/create')
     let errors = [];
     // Error Checking
     try {
-      householdName = checkString(householdName, "Household Name");
+      householdName = checkHouseholdName(householdName, "Household Name");
     } catch (e) {
       errors.push(e);
     }
@@ -115,7 +115,7 @@ router.route('/join')
     let errors = [];
     // Error Checking
     try {
-      householdName = checkString(householdName, "Household Name");
+      householdName = checkHouseholdName(householdName, "Household Name");
     } catch (e) {
       errors.push(e);
     }
