@@ -128,6 +128,22 @@ app.use('/users/signup', async (req, res, next) => {
 });
 /*
 This middleware will only be used for the 
+GET /profile route and will do one of the following: 
+If the user is NOT authenticated, 
+you will allow them to get through to the GET /login route. 
+*/
+app.use('/users/profile', async (req, res, next) => {
+  const authenticated = req.session.user;
+  if (!authenticated) {
+    if (authenticated.householdName.length === 0) {
+      return res.redirect('/household/login');
+    }
+  } else {
+    next();
+  }
+});
+/*
+This middleware will only be used for the 
 GET /household route and will do one of the following: 
 If the user is authenticated AND they have a householdName, 
 the middleware function will redirect them to the /household/info route,
@@ -245,6 +261,17 @@ app.use('/logout', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');
+  } else {
+    next();
+  }
+});
+/** Only checks if user is authenticated for access */
+app.use('/announcements', async (req, res, next) => {
+  const authenticated = req.session.user;
+  if (!authenticated) {
+    if (authenticated.householdName.length === 0) {
+      return res.redirect('/household/login');
+    }
   } else {
     next();
   }
