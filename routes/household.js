@@ -1,6 +1,6 @@
 import {Router} from 'express';
 const router = Router();
-import {householdData} from '../data/index.js';
+import {announcementData, householdData} from '../data/index.js';
 import { checkString } from '../validation.js';
 
 router.get('/', async (req, res) => {
@@ -77,7 +77,11 @@ router.route('/create')
     try {
       const house = await householdData.createHousehold(householdName, currentUser.userId);
       currentUser.householdName = house.householdName; // update req.session.user too
-      return res.redirect('/household/info');
+      if (currentUser.householdName.length !== 0) {
+        return res.redirect('/household/info');
+      } else {
+        return res.redirect('/household/new');
+      }
     } catch (e) {
       let errors = [];
       errors.push(e);
@@ -131,7 +135,11 @@ router.route('/join')
       // Login Successfull set req.session.user
       const house = await householdData.joinHousehold(householdName, currentUser.userId);
       currentUser.householdName = house.householdName; // update req.session.user too
-      return res.redirect('/household/info');
+      if (currentUser.householdName.length !== 0) {
+        return res.redirect('/household/info');
+      } else {
+        return res.redirect('/household/new');
+      }
     } catch (e) {
       let errors = [];
       errors.push(e);
