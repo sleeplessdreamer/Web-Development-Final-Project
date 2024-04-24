@@ -34,7 +34,10 @@
 <ul class="announcement-lists">
     {{#each user.announcements}}
     <li>
-        {{this}}
+        {{this.announcement}}<br>
+        {{this.comment}}<br>
+        {{this.currentDate}}<i></i>
+
     </li>
     {{/each}}
 </ul>
