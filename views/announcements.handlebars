@@ -1,0 +1,10 @@
+<h1>{{pageTitle}}</h1>
+<ul class="announcement-list">
+    {{#each announcements}}
+    <li>
+      {{this.announcement}}<br>
+      {{this.comment}}<br>
+      <i>{{this.currentDate}}</i>
+    </li>
+    {{/each}}
+</ul>
