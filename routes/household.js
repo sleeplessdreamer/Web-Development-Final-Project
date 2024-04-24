@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
 router.route('/new')
   .get(async (req, res) => {
     const user = req.session.user;
-    res.render('household/new', {
+    res.status(200).render('household/new', {
       pageTitle: 'New Household Name', 
       user,
       authenticated: true,
@@ -23,7 +23,7 @@ router.route('/info')
     let errors = [];
     try {
       const members = await householdData.getAllUsersByHousehold(user.householdName, user.userId);
-      res.render('household/info', {
+      res.status(200).render('household/info', {
         pageTitle: 'Info', 
         user,
         authenticated: true,
@@ -32,7 +32,7 @@ router.route('/info')
       });
     } catch (e) {
       errors.push(e);
-      res.render('error', {
+      res.status(400).render('error', {
         pageTitle: 'Info', 
         user,
         authenticated: true,
@@ -44,7 +44,7 @@ router.route('/info')
 router.route('/create') 
   .get(async (req, res) => {
     const user = req.session.user;
-    res.render('household/create', {
+    res.status(200).render('household/create', {
       pageTitle: 'Create Hosehold', 
       user,
       authenticated: true,
@@ -100,7 +100,7 @@ router.route('/create')
 router.route('/join')
   .get(async (req, res) => {
     const user = req.session.user;
-    res.render('household/join', 
+    res.status(200).render('household/join', 
     {pageTitle: 'Join Hosehold', 
     user,
     authenticated: true,
@@ -134,7 +134,21 @@ router.route('/join')
     try {
       // Login Successfull set req.session.user
       const house = await householdData.joinHousehold(householdName, currentUser.userId);
+      const allMembers = await householdData.getAllUsersByHousehold(householdName);
+      let nameCounter = 0; // count number of itmes name appears
+      let memberName = currentUser.firstName + " " + currentUser.lastName;
+      let memberLastName;
+      // Check if there are duplicate names in the household
+      allMembers.forEach((member) => {
+        if (member === memberName) {
+          nameCounter++ // increment name counter
+          memberLastName = currentUser.lastName + nameCounter.toString(); // append nameCounter and convert to string
+        } else {
+          memberLastName = currentUser.lastName; // else keep the same
+        }
+      });
       currentUser.householdName = house.householdName; // update req.session.user too
+      currentUser.lastName = memberLastName;
       if (currentUser.householdName.length !== 0) {
         return res.redirect('/household/info');
       } else {

@@ -18,6 +18,8 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
+    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
+
     // Create New Household
     let members = [userMember.firstName + " " + userMember.lastName], // put the user who created the id in the household
       groceryLists = []
@@ -32,6 +34,7 @@ const exportedMethods = {
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
       throw 'Error: Could not add household';
 
+    householdName = householdName.toLowerCase(); // store as lowercase, case insensitive
     // Add householdName to user info
     const updatedUser = {
       householdName: householdName,
@@ -54,6 +57,8 @@ const exportedMethods = {
     householdName = checkString(householdName, "Household Name");
     userId = checkId(userId, "User Id");
 
+    
+
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
     if (existingHousehold.length === 0) throw `Error: Household does not exist`;
@@ -61,9 +66,36 @@ const exportedMethods = {
     // Get name of user who created is joining household and put them in members list
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
+
+    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
+
+    // Get all exisitng household members
+    const allMembers = await this.getAllUsersByHousehold(householdName);
+    let nameCounter = 0; // count number of itmes name appears
+    let memberName = userMember.firstName + " " + userMember.lastName;
+    let memberLastName;
+    // Check if there are duplicate names in the household
+    const numberRegEx = /\d+$/;
+    let match = false;
+    allMembers.forEach((member) => {
+      let hasNumber = member.match(numberRegEx)
+      if (hasNumber) {
+        member = member.slice(0, -hasNumber[0].length);
+      }
+      if (member === memberName) {
+        nameCounter++; // increment name counter
+        match = true;
+        memberLastName = userMember.lastName + nameCounter.toString(); // append nameCounter and convert to string
+      } else {
+        if (!match) {
+          memberLastName = userMember.lastName; // else keep the same
+        }
+      }
+    });
+    // Add new member to Household collection
     let updatedInfo = await householdCollection.findOneAndUpdate(
       { _id: new ObjectId(existingHousehold[0]._id) },
-      { $push: { members: userMember.firstName + " " + userMember.lastName } },
+      { $push: { members: userMember.firstName + " " + memberLastName } },
       { returnDocument: "after" }
     );
     if (!updatedInfo) {
@@ -73,6 +105,7 @@ const exportedMethods = {
     // Add householdName to user info
     const updatedUser = {
       householdName: householdName,
+      lastName: memberLastName // update name if there are duplicates
     }
     // Get user and add householdName they just joined to their information
     const userCollection = await users();

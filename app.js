@@ -265,13 +265,14 @@ app.use('/logout', async (req, res, next) => {
     next();
   }
 });
-/** Only checks if user is authenticated for access */
+/** Only checks if user is authenticated for access and has householdName */
 app.use('/announcements', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
-    if (authenticated.householdName.length === 0) {
-      return res.redirect('/household/login');
-    }
+    return res.redirect('/household/login');
+  }
+  else if (authenticated && authenticated.householdName.length === 0) {
+    return res.redirect('/household/new');
   } else {
     next();
   }

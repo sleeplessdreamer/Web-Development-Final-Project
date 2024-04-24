@@ -1,18 +1,18 @@
 import { Router } from 'express';
 const router = Router();
 import { userData } from '../data/index.js';
-import { checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
+import { checkId, checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
 import xss from 'xss';
+
 router.route('/')
   .get(async (req, res) => {
-
   })
 
 // Render Signup Page
 router.route('/signup')
   .get(async (req, res) => {
-    res.render('landing/signup', {
+    res.status(200).render('landing/signup', {
       pageTitle: 'Sign Up',
       authenticated: false,
       household: false
@@ -100,7 +100,7 @@ router.route('/signup')
 
 router.route('/login')
   .get(async (req, res) => {
-    res.render('landing/login', { 
+    res.status(200).render('landing/login', { 
       pageTitle: 'Log In',
       authenticated: false,
       household: false});
@@ -168,10 +168,23 @@ router.route('/login')
     if (user.householdName.length !== 0) {
       household = true;
     }
-    res.render('users/profile', {
+    try {
+      user.userId = checkId(user.userId, "User Id"); // extra error checking
+    } catch (e) {
+      res.status(503).render("error", {
+        pageTitle: "Error",
+        errors: e,
+        hasErrors: true,
+        authenticated: true,
+        household: household
+      });
+      return;
+    }
+    const userProfile = await userData.getUserById(user.userId); // get user by Id
+    res.status(200).render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,
-      user,
+      user: userProfile, // render userprofile
       household: household
     });
   });
@@ -183,7 +196,7 @@ router.route('/login')
     if (user.householdName.length !== 0) {
       household === true;
     }
-    res.render('users/logout', {
+    res.status(200).render('users/logout', {
       pageTitle: 'Logout', 
       firstName: req.session.user.firstName, 
       lastName: req.session.user.lastName,
