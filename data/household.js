@@ -19,7 +19,7 @@ const exportedMethods = {
     if (!userMember) throw `User could not be found`;
 
     if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
-
+    
     // Create New Household
     let members = [userMember.firstName + " " + userMember.lastName], // put the user who created the id in the household
       groceryLists = []
@@ -34,7 +34,6 @@ const exportedMethods = {
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
       throw 'Error: Could not add household';
 
-    householdName = householdName.toLowerCase(); // store as lowercase, case insensitive
     // Add householdName to user info
     const updatedUser = {
       householdName: householdName,
@@ -57,8 +56,7 @@ const exportedMethods = {
     householdName = checkString(householdName, "Household Name");
     userId = checkId(userId, "User Id");
 
-    
-
+    //householdName = householdName.toLowerCase(); // case in-sensitive
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
     if (existingHousehold.length === 0) throw `Error: Household does not exist`;
