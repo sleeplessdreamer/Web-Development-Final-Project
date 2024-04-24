@@ -1,6 +1,7 @@
 import {dbConnection, closeConnection} from '../config/mongoConnection.js';
 import users from '../data/users.js';
 import households from '../data/household.js';
+import announcements from '../data/announcementPost.js';
 
 
 const db = await dbConnection();
@@ -54,7 +55,15 @@ let login = await users.logInUser(
 )
 //console.log(login);
 
-// Try to login user with wrong password should throw
+try {
+    await users.logInUser(
+        "adeshmukh@stevens.edu",
+        "cannotB3h@cked!"
+    )
+} catch (e) {
+    //console.log(e);
+}
+
 try {
     await users.logInUser(
         "lnappi@stevens.edu",
@@ -91,9 +100,8 @@ ourHousehold = await households.joinHousehold(
 );
 //console.log(ourHousehold);
 
-// Get all household members (valid)
-let everybody = await users.getAllUsers();
-//console.log(everybody);
+let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHousehold.householdName);
+//console.log(announcement);
 
 console.log()
 
