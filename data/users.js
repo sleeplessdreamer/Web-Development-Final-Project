@@ -92,23 +92,25 @@ const exportedMethods = {
     });
     // Returns list of members: [firstName lastName, firstName lastName]
     return members;
-  },
-
-  async updateUser(
-    email,
-    password,
-    firstName,
-    lastName,
-    age
-  ) {
-    // Error Checking
-    email = checkEmail(email, 'Email Address');
-    password = checkPasswordSignUp(password, 'Password');
-    firstName = checkName(firstName, 'First Name');
-    lastName = checkName(lastName, 'Last Name');
-    age = checkAge(age, 'Age');
-    return;
   }
+
+  // not needed. can add if time permits
+  // async updateUser(
+  //   email,
+  //   password,
+  //   firstName,
+  //   lastName,
+  //   age
+  // ) {
+  //   // Error Checking
+  //   email = checkEmail(email, 'Email Address');
+  //   password = checkPasswordSignUp(password, 'Password');
+  //   firstName = checkName(firstName, 'First Name');
+  //   lastName = checkName(lastName, 'Last Name');
+  //   age = checkAge(age, 'Age');
+  //   return;
+  // }
+
 
 };
 export default exportedMethods;

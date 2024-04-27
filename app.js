@@ -18,6 +18,10 @@ app.use(
     resave: false,
   })
 );
+
+// TODO: use cron to schedule weekly shopper
+
+
 /* This middleware will apply to the root route / 
 Keeping this here for future error checking
 */
