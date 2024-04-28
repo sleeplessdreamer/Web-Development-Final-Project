@@ -19,9 +19,6 @@ app.use(
   })
 );
 
-// TODO: use cron to schedule weekly shopper
-
-
 /* This middleware will apply to the root route / 
 Keeping this here for future error checking
 */
@@ -273,7 +270,7 @@ app.use('/logout', async (req, res, next) => {
 app.use('/announcements', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
-    return res.redirect('/household/login');
+    return res.redirect('/users/login');
   }
   else if (authenticated && authenticated.householdName.length === 0) {
     return res.redirect('/household/new');

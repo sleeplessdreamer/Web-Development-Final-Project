@@ -1,10 +1,6 @@
 <div class="household-info">
     <h1>The {{user.householdName}} Household</h1>
-    {{#if user.shopper}}
-        <p>You are currently this week's shopper.</p>
-    {{else}}
-        <p>Phew! You're not this week's shopper.</p>
-    {{/if}}
+    <p>This week's shopper is: <strong>{{house.currentShopperName}}!</strong></p>
     <ul class="members-list">
     <p><strong>Members</strong></p>
         {{#each members}}

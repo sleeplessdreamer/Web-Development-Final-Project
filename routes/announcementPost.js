@@ -19,7 +19,7 @@ router.route('/')
     }
     const announcements = await announcementData.getAllAnnouncementsByHouseholdName(user.householdName);
     res.status(200).render('announcements', 
-    {pageTitle: "Announcements Tab",
+    {pageTitle: "Announcements",
     authenticated: true,
     household: true,
     announcements

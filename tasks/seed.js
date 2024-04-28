@@ -118,7 +118,7 @@ try {
     //console.log(e);
 }
 
-await households.createHousehold(
+let house = await households.createHousehold(
     "Nappi",
     userOne._id.toString()
 );
@@ -177,6 +177,12 @@ ourHousehold = await households.joinHousehold(
     "GirlBosses",
     userSix._id.toString()
 );
+
+let allHouses = await households.getAllHouseholds();
+
+console.log(await households.rotateShopper());
+console.log(await households.rotateShopper());
+console.log(await households.rotateShopper());
 
 let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHousehold.householdName);
 //console.log(announcement);

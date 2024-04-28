@@ -1,4 +1,4 @@
-import { checkId, checkString, checkHouseholdName } from '../validation.js'
+import { checkId, checkHouseholdName } from '../validation.js'
 import { household, users, announcements } from '../config/mongoCollections.js'; // import collection
 import userData from './users.js'
 import { ObjectId } from 'mongodb';
@@ -19,15 +19,17 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
-    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
-    
+    if (userMember.householdName.length !== 0) throw `Error: User is already in a household`;
+
     // Create New Household
     let members = [userMember.firstName + " " + userMember.lastName], // put the user who created the id in the household
-      groceryLists = []
+      groceryLists = [], currentShopper = 0;
     const newhouseHold = {
       householdName,
       members,
-      groceryLists
+      groceryLists,
+      currentShopper: currentShopper,
+      currentShopperName: members[currentShopper]
     }
 
     // Insert New Household
@@ -68,7 +70,7 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
-    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
+    if (userMember.householdName.length !== 0) throw `Error: User is already in a household`;
 
     // Get all exisitng household members
     const allMembers = await this.getAllUsersByHousehold(householdName);
@@ -174,6 +176,24 @@ const exportedMethods = {
     return insertInfo;
   },
 
+  async getAllHouseholds() {
+    const householdCollection = await household();
+    let householdList = await householdCollection
+      .find({})
+      .project({ _id: 0, householdName: 1})   // just return the name of the household
+      .toArray();
+    if (!householdList) {
+      throw `Could not get all users`
+    }
+    // Create list of just first and last names
+    let houses = [];
+    householdList.forEach((object) => {
+      houses.push(object.householdName);
+    });
+    // Returns list of the names of households
+    return houses;
+  },
+
   async getHouseholdByName(householdName) {
     householdName = checkHouseholdName(householdName, 'Household Name');
     const householdCollection = await household();
@@ -187,6 +207,34 @@ const exportedMethods = {
     let members = await this.getHouseholdByName(householdName);
     members = members.members; // just get the members    
     return members;
+  },
+
+  // rotates shopper each week
+  async rotateShopper() {
+    const households = await this.getAllHouseholds();
+    for (const house in households) {
+      const currentHouse = await this.getHouseholdByName(households[house]);
+      const members = await this.getAllUsersByHousehold(households[house]);
+      if (!members) throw `Error: Could not get household members`;
+      currentHouse.currentShopper = (currentHouse.currentShopper + 1) % members.length;
+      currentHouse.currentShopperName = members[currentHouse.currentShopper];
+      // Update household info
+      const updatedHousehold = {
+        currentShopper: currentHouse.currentShopper,
+        currentShopperName: currentHouse.currentShopperName
+      }
+      const householdCollection = await household();
+      let updatedInfo = await householdCollection.findOneAndUpdate(
+        { _id: new ObjectId(currentHouse._id) },
+        { $set: updatedHousehold },
+        { returnDocument: 'after' }
+      );
+      // if household cannot be updated method should throw
+      if (!updatedInfo) {
+        throw 'Error: Could not update household successfully';
+      }
+    }
+    return {rotateShopper: true};
   }
 
 };

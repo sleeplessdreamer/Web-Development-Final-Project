@@ -1,6 +1,6 @@
-import {Router} from 'express';
+import { Router } from 'express';
 const router = Router();
-import {announcementData, householdData} from '../data/index.js';
+import { announcementData, householdData } from '../data/index.js';
 import { checkHouseholdName } from '../validation.js';
 
 router.get('/', async (req, res) => {
@@ -10,48 +10,51 @@ router.route('/new')
   .get(async (req, res) => {
     const user = req.session.user;
     res.status(200).render('household/new', {
-      pageTitle: 'New Household Name', 
+      pageTitle: 'New Household Name',
       user,
       authenticated: true,
       household: false,
     });
-})
+  })
 
 router.route('/info')
-   .get(async (req, res) => {
-    const user = req.session.user;
+  .get(async (req, res) => {
+    let user = req.session.user;
     let errors = [];
     try {
-      const members = await householdData.getAllUsersByHousehold(user.householdName, user.userId);
+      const members = await householdData.getAllUsersByHousehold(user.householdName);
+      const house = await householdData.getHouseholdByName(user.householdName);
       res.status(200).render('household/info', {
-        pageTitle: 'Info', 
+        pageTitle: 'Info',
         user,
         authenticated: true,
         members: members,
+        house: house,
         household: true
       });
     } catch (e) {
       errors.push(e);
       res.status(400).render('error', {
-        pageTitle: 'Info', 
+        pageTitle: 'Info',
         user,
         authenticated: true,
         household: true,
-        errors: errors});
+        errors: errors
+      });
     }
-});
+  });
 
-router.route('/create') 
+router.route('/create')
   .get(async (req, res) => {
     const user = req.session.user;
     res.status(200).render('household/create', {
-      pageTitle: 'Create Hosehold', 
+      pageTitle: 'Create Hosehold',
       user,
       authenticated: true,
       household: false,
     });
-})
-  .post(async(req,res) => {
+  })
+  .post(async (req, res) => {
     const currentUser = req.session.user;
     const createData = req.body;
     let householdName = createData.householdName;
@@ -95,19 +98,20 @@ router.route('/create')
       });
       return;
     }
-});
+  });
 
 router.route('/join')
   .get(async (req, res) => {
     const user = req.session.user;
-    res.status(200).render('household/join', 
-    {pageTitle: 'Join Hosehold', 
-    user,
-    authenticated: true,
-    household: false,
-  });
-})
-  .post(async(req,res) => {
+    res.status(200).render('household/join',
+      {
+        pageTitle: 'Join Hosehold',
+        user,
+        authenticated: true,
+        household: false,
+      });
+  })
+  .post(async (req, res) => {
     // Get Request Body
     const currentUser = req.session.user;
     const joinData = req.body;
@@ -167,6 +171,6 @@ router.route('/join')
       });
       return;
     }
-});
+  });
 
 export default router;
