@@ -26,7 +26,32 @@ router.route('/')
   })
 })
  .post(async (req,res) => {
-
- })
+    const user = req.session.user;
+    try{
+      user.householdName = checkString(user.householdName);
+    }
+    catch(e){
+      res.status(400).render('error', 
+      {pageTitle: "Error",
+      authenticated: true,
+      household: true,
+      error: e
+    })
+    return;
+    }
+    const {announcement} = req.body;
+    try{
+      announcement = checkString(announcement);
+    }
+    catch(e){
+      res.status(400).render('error', 
+      {pageTitle: "Error",
+      authenticated: true,
+      household: true,
+      error: e
+    })
+    return;
+ }
+});
 
 export default router;
