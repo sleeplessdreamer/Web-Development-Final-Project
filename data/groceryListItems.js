@@ -1,5 +1,5 @@
 import { groceryLists } from "../config/mongoCollections.js";
-import * as groceryListData from "./groceryList.js";
+import groceryListData from "./groceryList.js";
 import {checkAge, checkId, checkString} from '../validation.js';
 import {ObjectId} from 'mongodb';
 
@@ -47,13 +47,12 @@ const exportedMethods = {
       }
     }
 
-    const groceryListList = await groceryLists();
-    const targetList = await groceryListList.findOneAndUpdate(
-      {_id:new ObjectId(listId)},
-      {$push: {items:newItem}},
+    const groceryListCollection = await groceryLists();
+    const targetList = await groceryListCollection.findOneAndUpdate(
+      {_id: new ObjectId(listId)},
+      {$push: {items: newItem}},
       {returnDocument: 'after'}
     );
-
     return newItem;
   },
   

@@ -206,9 +206,11 @@ try{
         "Medium",
         "produce"
     );
+    //console.log(newitem);
 }catch(e){
     console.log(e);
 }
+//console.log(listOne);
 
 try{
     await items.getAllItems(listOne._id)
