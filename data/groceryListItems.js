@@ -1,5 +1,5 @@
 import { groceryLists } from "../config/mongoCollections.js";
-import * as groceryListData from "./groceryList.js";
+import groceryListData from "./groceryList.js";
 import {checkAge, checkId, checkString} from '../validation.js';
 import {ObjectId} from 'mongodb';
 
@@ -48,11 +48,27 @@ const exportedMethods = {
     }
 
     const groceryListList = await groceryLists();
-    const targetList = await groceryListList.findOneAndUpdate(
-      {_id:new ObjectId(listId)},
-      {$push: {items:newItem}},
-      {returnDocument: 'after'}
+    let foundItem = await groceryListList.findOne(
+      {'_id': new ObjectId(listId), 'items.itemName': itemName},
+      {projection: {_id: 1, 'items.$': 1}}
     );
+    if(foundItem === null){
+      const targetList = await groceryListList.findOneAndUpdate(
+        {_id:new ObjectId(listId)},
+        {$push: {items:newItem}},
+        {returnDocument: 'after'}
+      );
+    }
+    else{
+      foundItem = foundItem.items[0];
+      quantity = foundItem.quantity + quantity;
+      //await this.updateItem(foundItem._id, {quantity: quantity})
+      let updateInfo = await groceryListList.findOneAndUpdate(
+        {'items._id': new ObjectId(foundItem._id)},
+        {$set: {'items.$.quantity': quantity}},
+        {returnDocument: 'after'}
+      );
+    }
 
     return newItem;
   },

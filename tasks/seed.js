@@ -210,6 +210,18 @@ try{
     console.log(e);
 }
 
+try{//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
+    let dupeItem = await items.newItem(
+        listOne._id,
+        "Bananas",
+        3,
+        "Medium",
+        "produce"
+    );
+}catch(e){
+    console.log(e);
+}
+
 try{
     await items.getAllItems(listOne._id)
 }catch(e){
@@ -223,11 +235,24 @@ try{
     console.log(e);
 }
 
-try{
-    await items.deleteLItem(itemOne._id);
-}catch(e){
-    console.log(e);
-}
+// try{
+//     await items.updateItem(itemOne._id, 
+//         {
+//             itemName:"Banana",
+//             quantity: 5,
+//             priority:"High",
+//             category: "Fruits"
+//         }
+//     );
+// }catch(e){
+//     console.log(e);
+// }
+
+// try{
+//     await items.deleteLItem(itemOne._id);
+// }catch(e){
+//     console.log(e);
+// }
 
 console.log()
 
