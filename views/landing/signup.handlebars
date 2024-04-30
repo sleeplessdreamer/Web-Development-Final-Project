@@ -1,26 +1,38 @@
 <div class="form">
-<h1>{{pageTitle}}</h1>
-<p>Please Enter Details Here:</p>
-<form action="/users/signup" method="POST" class="signup-form">
-  <label for="firstName">
-    <input type="text" name="firstName" placeholder="First Name" value="{{user.firstName}}" id="firstName">
-  </label>
-  <label for="lastName">
-    <input type="text" name="lastName" placeholder="Last Name" value="{{user.lastName}}" id="firstName">
-  </label>
-  <label for="email">
-    <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
-  </label>
-  <label for="password">
-    <input type="password" name="password" placeholder="Password" value="{{user.password}}" id="password">
-  </label>
-  <label for="age">
-    <input type="number" name="age" min="13" placeholder="Age" value="{{user.age}}" id="age">
-  </label>
-  <input type="submit" id="submit-button">
-  <input type="reset" id="reset-button">
-</form>
-{{#if hasErrors}}
+  <h1>{{pageTitle}}</h1>
+  <div class="signup">
+    <p>Please Enter Details Here:</p>
+    <form action="/users/signup" method="POST" class="signup-form">
+      <div>
+        <label for="firstName">
+          <input type="text" name="firstName" placeholder="First Name" value="{{user.firstName}}" id="firstName">
+        </label>
+      </div>
+      <div>
+        <label for="lastName">
+          <input type="text" name="lastName" placeholder="Last Name" value="{{user.lastName}}" id="lastName">
+        </label>
+      </div>
+      <div>
+        <label for="email">
+          <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
+        </label>
+      </div>
+      <div>
+        <label for="password">
+          <input type="password" name="password" placeholder="Password" value="{{user.password}}" id="password">
+        </label>
+      </div>
+      <div>
+        <label for="age">
+          <input type="number" name="age" min="13" placeholder="Age" value="{{user.age}}" id="age">
+        </label>
+      </div>
+      <input type="submit" id="submit-button">
+      <input type="reset" id="reset-button">
+    </form>
+  </div>
+  {{#if hasErrors}}
   <ul class="error-list">
     {{#each errors}}
     <li>

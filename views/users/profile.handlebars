@@ -1,4 +1,5 @@
 <h1>{{pageTitle}}</h1>
+<h3>My Information</h3>
 <table class="profile-user">
     <tr>
         <th>First Name</th>
@@ -12,31 +13,31 @@
         <th>Age</th>
         <td>{{user.age}}</td>
     </tr>
-<table>
-</div>
+</table>
+
 <h3>My Grocery Lists</h3>
-<ul class="grocery-lists">
+<ul class="grocerys-list">
     {{#each user.groceryLists}}
-    <li>
+    <li class="groceryLists">
         {{this}}
     </li>
     {{/each}}
 </ul>
 <h3>My Comments</h3>
-<ul class="comment-lists">
+<ul class="comments-list">
     {{#each user.comments}}
-    <li>
+    <li class="comments">
         {{this}}
     </li>
     {{/each}}
 </ul>
 <h3>My Announcements</h3>
-<ul class="announcement-lists">
+<ul class="announcements-list">
     {{#each user.announcements}}
-    <li>
+    <li class="announcements-post">
         {{this.announcement}}<br>
         {{this.comment}}<br>
-        {{this.currentDate}}<i></i>
+        <i>{{this.currentDate}}</i>
 
     </li>
     {{/each}}

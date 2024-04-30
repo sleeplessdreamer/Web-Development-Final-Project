@@ -1,10 +1,12 @@
-<h1>{{pageTitle}}</h1>
-<ul class="announcement-list">
+<div class="announcements-view">
+  <h1>{{pageTitle}}</h1>
+  <ul class="announcements-list">
     {{#each announcements}}
-    <li>
+    <li class="announcement-post">
       {{this.announcement}}<br>
       {{this.comment}}<br>
-      <i>{{this.currentDate}}</i>
+      <i id="date">{{this.currentDate}}</i>
     </li>
     {{/each}}
-</ul>
+  </ul>
+</div>
