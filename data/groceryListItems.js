@@ -5,6 +5,7 @@ import {ObjectId} from 'mongodb';
 
 const exportedMethods = {
     async newItem (
+      listId,
       itemName,
       quantity,
       priority,
@@ -22,10 +23,12 @@ const exportedMethods = {
     priority = priority.trim();
     checkString(category);
     category = category.trim();
+    let newItem;
     if (comments){
       //TODO when Comment file is done
-      let newItem = {
+      newItem = {
         _id: new ObjectId(),
+        listId: listId,
         itemName:itemName,
         quantity: quantity,
         priority:priority,
@@ -34,8 +37,9 @@ const exportedMethods = {
       }
     }
     else{
-      let newItem = {
+      newItem = {
         _id: new ObjectId(),
+        listId: listId,
         itemName:itemName,
         quantity: quantity,
         priority:priority,
@@ -45,7 +49,7 @@ const exportedMethods = {
 
     const groceryListList = await groceryLists();
     const targetList = await groceryListList.findOneAndUpdate(
-      {_id:new ObjectId(targetList._id)},
+      {_id:new ObjectId(listId)},
       {$push: {items:newItem}},
       {returnDocument: 'after'}
     );
@@ -54,33 +58,44 @@ const exportedMethods = {
   },
   
   async getAllItems(groceryListId) {
-    checkString(groceryListId);
-    groceryListId = groceryListId.trim();
+    if (!groceryListId) throw `You must provide an list id`;
 
     if (!ObjectId.isValid(groceryListId)) throw `invalid list ID`; //ensuring that the list exists
     
-    let targetList = await groceryListData.get(groceryListId);
+    let targetList = await groceryListData.getGroceryList(groceryListId);
     return targetList.items;
   },
 
-  async getItem(id) {
-    if (!id) throw `You must provide an item id`;
-    if (!ObjectId.isValid(id)) throw `invalid item Id`;
+  async getItem(targetListID, itemName) {// searching for items by name within a list
+    if (!targetListID) throw `You must provide an list id`;
+    if (!ObjectId.isValid(targetListID)) throw `invalid list Id`;
+
+    checkString(itemName);
+    itemName = itemName.trim();
 
     const groceryListList = await groceryLists();
     const foundItem = await groceryListList.findOne(
-      {'items._id': new ObjectId(id)},
+      {'_id': new ObjectId(targetListID), 'items.itemName': itemName},
       {projection: {_id: 1, 'items.$': 1}}
     );
-
     if(!foundItem){
       throw `Item not found`;
     }
-    return foundItem.reviews[0];
+    return foundItem.items[0];
   },
 
   async deleteLItem(id) {
-    return;
+    if (!id) throw `You must provide an item ID`;
+    if (!ObjectId.isValid(id)) throw `invalid item ID`;
+
+    const listCollection = await groceryLists();
+    const list = await listCollection.findOne({'items._id': new ObjectId(id)});
+    const deletionInfo = await listCollection.updateOne(
+      {_id: list._id},
+      {$pull: {items: {_id: new ObjectId(id)}}}
+    );
+    if (!deletionInfo) throw `Could not delete item with id of ${id}`;
+    return deletionInfo;
   },
   
   async updateItem(itemId, updateObject) {

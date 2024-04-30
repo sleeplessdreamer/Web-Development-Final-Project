@@ -6,11 +6,10 @@ const exportedMethods = {
     async newGroceryList (
     userId,
     groceryName,
-    items,
     listType
   ) {
 
-    if(!userId || !groceryName || !items){
+    if(!userId || !groceryName){
       throw 'Must provide all fields to Grocery List';
     }
 
@@ -22,9 +21,6 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
-    if(items.length < 1){
-      throw 'There must be at least one item in the list';
-    }
 
     if(typeof listType !== 'string'){
       throw 'type of list must be a string';
@@ -35,8 +31,8 @@ const exportedMethods = {
     const newList = {
       userId,
       groceryName,
-      items,
       listType,
+      items: [],
       dateCreated
     }
 
@@ -58,7 +54,7 @@ const exportedMethods = {
     return gList;
   },
 
-  async getGroceryLists(id) {
+  async getGroceryList(id) {
     const groceryListCollection = await groceryLists(); 
     const gList = await groceryListCollection.findOne({ _id: new ObjectId(id) });
     if (!gList){

@@ -2,6 +2,8 @@ import { dbConnection, closeConnection } from '../config/mongoConnection.js';
 import users from '../data/users.js';
 import households from '../data/household.js';
 import announcements from '../data/announcementPost.js';
+import items from '../data/groceryListItems.js';
+import lists from '../data/groceryList.js';
 
 const db = await dbConnection();
 await db.dropDatabase();
@@ -182,6 +184,50 @@ await households.getAllHouseholds();
 
 let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHousehold.householdName);
 //console.log(announcement);
+
+
+//attempting to make a grocery list
+let listOne;
+try{
+    listOne = await lists.newGroceryList(
+        userOne._id,
+        "Apartment Groceries",
+        "community"
+    );
+}catch(e){
+    console.log(e)
+}
+
+try{
+    let newitem = await items.newItem(
+        listOne._id,
+        "Bananas",
+        2,
+        "Medium",
+        "produce"
+    );
+}catch(e){
+    console.log(e);
+}
+
+try{
+    await items.getAllItems(listOne._id)
+}catch(e){
+    console.log(e);
+}
+
+let itemOne;
+try{
+    itemOne = await items.getItem(listOne._id, "Bananas");
+}catch(e){
+    console.log(e);
+}
+
+try{
+    await items.deleteLItem(itemOne._id);
+}catch(e){
+    console.log(e);
+}
 
 console.log()
 
