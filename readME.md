@@ -14,7 +14,7 @@
 Must be installed first:
 ```
 npm i bcrypt
-npm i cookie-parser
+npm i xss
 npm i express
 npm i express-handlebars
 npm i express-session
