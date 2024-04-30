@@ -29,7 +29,7 @@ const exportedMethods = {
       members,
       groceryLists,
       shopper: members[0],
-      shopperAssigned: new Date('2024-04-21T00:00:00') // reference point
+      shopperAssigned: new Date()
     }
     // Insert New Household
     const insertInfo = await householdCollection.insertOne(newhouseHold);
@@ -246,7 +246,6 @@ const exportedMethods = {
         if (!updatedInfo) {
           throw 'Error: Could not update household successfully';
         }
-        console.log(updatedInfo);
       }
     }
     return { rotateShopper: true };
