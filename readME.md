@@ -14,12 +14,13 @@
 Must be installed first:
 ```
 npm i bcrypt
-npm i xss
+npm i email-validator
 npm i express
 npm i express-handlebars
 npm i express-session
 npm i mongodb
 npm i seed
+npm i xss
 ```
 ## Seed File
 To populate database:
