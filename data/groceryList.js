@@ -40,7 +40,7 @@ const exportedMethods = {
 
     const insertInfo = await groceryListCollection.insertOne(newList);
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
-      throw 'Error: Could not add household';
+      throw 'Error: Could not add grocery list';
     newList._id = newList._id.toString();
     return newList;
   },

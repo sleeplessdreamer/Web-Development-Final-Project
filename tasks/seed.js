@@ -188,17 +188,17 @@ let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHou
 
 //attempting to make a grocery list
 let listOne;
-try{
+try {
     listOne = await lists.newGroceryList(
         userOne._id,
         "Apartment Groceries",
         "community"
     );
-}catch(e){
+} catch (e) {
     console.log(e)
 }
-
-try{
+//console.log(listOne); // before
+try {
     let newitem = await items.newItem(
         listOne._id,
         "Bananas",
@@ -206,13 +206,13 @@ try{
         "Medium",
         "produce"
     );
-    //console.log(newitem);
-}catch(e){
+    //console.log(newitem); // new item
+} catch (e) {
     console.log(e);
 }
-//console.log(listOne);
+//console.log(listOne); // after item is after
 
-try{//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
+try {//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
     let dupeItem = await items.newItem(
         listOne._id,
         "Bananas",
@@ -220,42 +220,61 @@ try{//testing to see if creating a new item with the same name will update the i
         "Medium",
         "produce"
     );
-}catch(e){
+    //console.log(dupeItem); // test if it adds to item that already exists in list
+} catch (e) {
     console.log(e);
 }
 
-try{
-    await items.getAllItems(listOne._id)
-}catch(e){
+try {
+    await items.getAllItems(listOne._id);
+} catch (e) {
     console.log(e);
 }
 
 let itemOne;
-try{
+try {
     itemOne = await items.getItem(listOne._id, "Bananas");
-}catch(e){
+} catch (e) {
     console.log(e);
 }
 
-// try{
-//     await items.updateItem(itemOne._id, 
-//         {
-//             itemName:"Banana",
-//             quantity: 5,
-//             priority:"High",
-//             category: "Fruits"
-//         }
-//     );
-// }catch(e){
-//     console.log(e);
-// }
+let update;
+try {
+    update = await items.updateItem(itemOne._id.toString(),
+        {
+            itemName: "Banana",
+            quantity: 5,
+            priority: "High",
+            category: "Fruits"
+        }
+    );
+} catch (e) {
+    console.log(e);
+}
+//console.log(update);
 
-// try{
-//     await items.deleteLItem(itemOne._id);
-// }catch(e){
-//     console.log(e);
-// }
+let deleteitem;
+//console.log(itemOne._id)
+try {
+    deleteitem = await items.deleteLItem(itemOne._id);
+    //console.log(deleteitem);
+} catch (e) {
+    console.log(e);
+}
 
+// putting it back
+try {
+    await items.newItem(
+        listOne._id,
+        "Banana",
+        5,
+        "High",
+        "Fruits"
+        
+    );
+} catch (e) {
+    console.log(e);
+}
 console.log()
 
 
