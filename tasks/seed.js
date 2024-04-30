@@ -206,9 +206,11 @@ try{
         "Medium",
         "produce"
     );
+    //console.log(newitem);
 }catch(e){
     console.log(e);
 }
+//console.log(listOne);
 
 try{//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
     let dupeItem = await items.newItem(

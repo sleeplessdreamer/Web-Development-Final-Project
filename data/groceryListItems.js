@@ -62,7 +62,6 @@ const exportedMethods = {
     else{
       foundItem = foundItem.items[0];
       quantity = foundItem.quantity + quantity;
-      //await this.updateItem(foundItem._id, {quantity: quantity})
       let updateInfo = await groceryListList.findOneAndUpdate(
         {'items._id': new ObjectId(foundItem._id)},
         {$set: {'items.$.quantity': quantity}},
