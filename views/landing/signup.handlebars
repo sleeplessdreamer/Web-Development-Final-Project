@@ -2,35 +2,37 @@
   <h1>{{pageTitle}}</h1>
   <div class="signup">
     <p>Please Enter Details Here:</p>
-    <form action="/users/signup" method="POST" class="signup-form">
+    <form action="/users/signup" method="POST" class="signup-form" id = "signup">
       <div>
         <label for="firstName">
           <input type="text" name="firstName" placeholder="First Name" value="{{user.firstName}}" id="firstName">
-        </label>
+        </label> <div id = "ferror" class = "error"></div>
       </div>
       <div>
         <label for="lastName">
           <input type="text" name="lastName" placeholder="Last Name" value="{{user.lastName}}" id="lastName">
-        </label>
+        </label> <div id = "lerror" class = "error"></div>
       </div>
       <div>
         <label for="email">
           <input type="text" name="email" placeholder="Email Address" value="{{user.email}}" id="email">
-        </label>
+        </label>  <div id = "eerror" class = "error"></div>
       </div>
       <div>
         <label for="password">
           <input type="password" name="password" placeholder="Password" value="{{user.password}}" id="password">
-        </label>
+        </label> <div id = "perror" class = "error"></div>
       </div>
       <div>
         <label for="age">
           <input type="number" name="age" min="13" placeholder="Age" value="{{user.age}}" id="age">
-        </label>
+        </label> <div id = "aerror" class = "error"></div>
       </div>
+      <div id = "error_div" class = "error"> </div>
       <input type="submit" id="submit-button">
       <input type="reset" id="reset-button">
     </form>
+    <script src = "/public/js/sign_up.js"></script>
   </div>
   {{#if hasErrors}}
   <ul class="error-list">
