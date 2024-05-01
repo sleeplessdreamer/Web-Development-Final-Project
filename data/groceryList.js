@@ -9,13 +9,10 @@ const exportedMethods = {
     listType
   ) {
 
-    if(!userId || !groceryName){
+    if(!userId || !groceryName || !listType){
       throw 'Must provide all fields to Grocery List';
     }
 
-    //check if grocerylist name exists already in household?
-    //if listType = community, shopper must be present
-    //shopper must be valid id in household
     userId = checkId(userId, "User ID");
 
     const userMember = await userData.getUserById(userId);
@@ -24,6 +21,10 @@ const exportedMethods = {
 
     if(typeof listType !== 'string'){
       throw 'type of list must be a string';
+    }
+
+    if(listType.toLowerCase() !== 'community' || listType.toLowerCase !== 'special occasion' || listType.toLowerCase() !== 'personal'){
+      throw 'Not a valid list type';
     }
 
     const dateCreated = Date();
@@ -78,7 +79,30 @@ const exportedMethods = {
     groceryName,
     items,
   ) {
-    return;
+    if(!userId || !groceryName || !items){
+      throw 'Must provide all fields to update Grocery List';
+    }
+
+    userId = checkId(userId, "User Id");
+
+    let name = groceryName.trim();
+    if(name.length === 0){
+      throw 'You must provide an input for the list name';
+    }
+
+    const updateGroceryList = {
+      userId: userId,
+      groceryName: name,
+      items: items,
+    }
+
+
+    const groceryListCollection = await groceryLists();
+    const gList = await groceryListCollection.findOneAndUpdate({ _id: new ObjectId(id) }, {$set: updateGroceryList}, { returnOriginal: false } );
+    if (!gList){
+      throw 'Error: Could not update list'
+    }
+    return {groceryListUpdated: true};
     }
   };
   export default exportedMethods;
