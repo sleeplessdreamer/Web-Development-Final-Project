@@ -3,9 +3,11 @@
   <ul class="announcements-list">
     {{#each announcements}}
     <li class="announcement-post">
-      {{this.announcement}}<br>
-      {{this.comment}}<br>
-      <i id="date">{{this.currentDate}}</i>
+      <p>
+        {{this.announcement}}<br>
+        {{this.comment}}<br>
+        <i id="date">{{this.currentDate}}</i>
+      </p>
     </li>
     {{/each}}
   </ul>
