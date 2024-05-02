@@ -1,6 +1,7 @@
 import { checkId, checkHouseholdName } from '../validation.js'
 import { household, users, announcements } from '../config/mongoCollections.js'; // import collection
 import userData from './users.js'
+import groceryData from './groceryList.js'
 import { ObjectId } from 'mongodb';
 
 const exportedMethods = {
@@ -9,7 +10,6 @@ const exportedMethods = {
     householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User ID");
 
-    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
     // Check if Household name already exists
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
@@ -57,8 +57,6 @@ const exportedMethods = {
   async joinHousehold(householdName, userId) {
     householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User Id");
-
-    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
 
     //householdName = householdName.toLowerCase(); // case in-sensitive
     const householdCollection = await household();
@@ -208,6 +206,18 @@ const exportedMethods = {
     return members;
   },
 
+  async getAllGroceryListsByHousehold(householdName) {
+    householdName = checkHouseholdName(householdName, "Household Name");
+    let groceryLists = await this.getHouseholdByName(householdName);
+    groceryLists = groceryLists.groceryLists; // just get groceryLists, will be list of Ids
+    let allLists = [];
+    for (let i=0; i<=groceryLists.length-1; i++) {
+      let groceryList = await groceryData.getGroceryList(groceryLists[i].toString())
+      allLists.push(groceryList); // push to list
+    }
+    return allLists; // return list of all grocery lists for that household
+  },
+
   // rotates shopper each week
   async rotateShopper() {
     const households = await this.getAllHouseholds();
@@ -248,8 +258,7 @@ const exportedMethods = {
         }
       }
     }
-    return { rotateShopper: true };
+    return {rotateShopper: true};
   }
-
 };
 export default exportedMethods;
