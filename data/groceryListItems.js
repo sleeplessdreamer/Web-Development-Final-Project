@@ -93,6 +93,7 @@ const exportedMethods = {
   async deleteLItem(id) {
     if (!id) throw `You must provide an item ID`;
     if (!ObjectId.isValid(id)) throw `invalid item ID`;
+
     const listCollection = await groceryLists();
     const list = await listCollection.findOne({ 'items._id': id });
     const deletionInfo = await listCollection.updateOne(

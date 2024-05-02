@@ -30,7 +30,6 @@ const checkHouseholdName = (strVal, varName) => {
   if (strVal.length === 0) throw `Error: ${varName} cannot be an empty string or string with just spaces`;
   if (!isNaN(strVal)) throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
   if (strVal.includes(' ')) throw `Error: ${strVal} cannot contain spaces`;
-  strVal = strVal.slice(0, 1).toUpperCase() + strVal.slice(1).toLowerCase(); // store household name as uppercase and lower  
   return strVal;
 }
 
