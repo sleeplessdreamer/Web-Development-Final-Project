@@ -188,9 +188,11 @@ let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHou
 
 //attempting to make a grocery list
 let listOne;
+//console.log(userTwo._id);
 try {
     listOne = await lists.newGroceryList(
-        userOne._id,
+        userTwo._id,
+        "GirlBosses",
         "Apartment Groceries",
         "community"
     );
@@ -198,9 +200,10 @@ try {
     console.log(e)
 }
 //console.log(listOne); // before
+let newitem;
 try {
-    let newitem = await items.newItem(
-        listOne._id,
+    newitem = await items.newItem(
+        listOne._id.toString(),
         "Bananas",
         2,
         "Medium",
@@ -211,10 +214,9 @@ try {
     console.log(e);
 }
 //console.log(listOne); // after item is after
-
 try {//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
     let dupeItem = await items.newItem(
-        listOne._id,
+        listOne._id.toString(),
         "Bananas",
         3,
         "Medium",
@@ -224,16 +226,15 @@ try {//testing to see if creating a new item with the same name will update the 
 } catch (e) {
     console.log(e);
 }
-
 try {
-    await items.getAllItems(listOne._id);
+    await items.getAllItems(listOne._id.toString());
 } catch (e) {
     console.log(e);
 }
 
 let itemOne;
 try {
-    itemOne = await items.getItem(listOne._id, "Bananas");
+    itemOne = await items.getItem(newitem._id.toString(), "Bananas");
 } catch (e) {
     console.log(e);
 }
@@ -261,11 +262,10 @@ try {
 } catch (e) {
     console.log(e);
 }
-
 // putting it back
 try {
     await items.newItem(
-        listOne._id,
+        listOne._id.toString(),
         "Banana",
         5,
         "High",
@@ -275,6 +275,48 @@ try {
 } catch (e) {
     console.log(e);
 }
+
+try {
+    await lists.newGroceryList(
+        userThree._id,
+        "GirlBosses",
+        "Stuff I Need",
+        "personal"
+    );
+} catch (e) {
+    console.log(e)
+}
+
+try {
+    await lists.newGroceryList(
+        userFour._id,
+        "GirlBosses",
+        "Crochet Thingies",
+        "personal"
+    );
+} catch (e) {
+    console.log(e)
+}
+
+// user has to belong to household to make grocery lists for it will throw
+try {
+    await lists.newGroceryList(
+        userOne._id,
+        "GirlBosses",
+        "Crochet Thingies",
+        "personal"
+    );
+} catch (e) {
+    //console.log(e)
+}
+
+
+try {
+    await households.getAllGroceryListsByHousehold("Girlbosses");
+} catch (e) {
+    console.log(e);
+}
+
 console.log()
 
 

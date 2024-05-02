@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { householdData } from '../data/index.js';
+import { householdData, userData } from '../data/index.js';
 import { checkHouseholdName } from '../validation.js';
 import xss from 'xss';
 
@@ -25,12 +25,15 @@ router.route('/info')
     try {
       const members = await householdData.getAllUsersByHousehold(user.householdName);
       const house = await householdData.getHouseholdByName(user.householdName);
+      await householdData.rotateShopper(); // rotate shopper when page is refreshed  
+      const groceryLists = await householdData.getAllGroceryListsByHousehold(user.householdName);
       res.status(200).render('household/info', {
         pageTitle: 'Info',
         user,
         authenticated: true,
         members: members,
         house: house,
+        groceryLists: groceryLists,
         household: true
       });
     } catch (e) {

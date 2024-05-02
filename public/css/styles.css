@@ -183,13 +183,6 @@ h1 {
     margin-right: auto;
 }
 
-.error {
-    color: red; 
-    font-size: 10pt;
-}
-.hidden {
-    display: none;
-}
 /* https://www.w3schools.com/css/css_grid.asp */
 .grid-container {
     display: grid;
