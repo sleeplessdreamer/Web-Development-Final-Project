@@ -25,14 +25,18 @@ header {
 .landing-view,
 .new-household,
 .profile-user,
-.household-info {
+.household-view {
     margin: auto;
     text-align: center;
 }
-
-.members-list,
 .error-list {
     text-align: left;
+}
+
+.members-list {
+    padding-left: 400px;
+    text-align: left;
+    list-style: none;
 }
 
 .profile-user th {

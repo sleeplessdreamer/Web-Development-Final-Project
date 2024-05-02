@@ -1,33 +1,38 @@
-<div class="household-info">
+<div class="household-view">
     <h1>The {{user.householdName}} Household</h1>
-    <p>This week's shopper is: <strong>{{house.shopper}}</strong>!</p>
-    <p>They will be responsible for shopping for the groceries on the <strong>community</strong> list for the entire
-        household.</p>
-    <ul class="members-list">
-        <h2><strong>Members</strong></h2>
-        {{#each members}}
-        <li>
-            {{this}}
-        </li>
-        {{/each}}
-    </ul>
-    <h2 class="grocery"><strong>Groceries</strong></h2>
-    {{#if groceryLists.length}}
-    <div class="grid-container">
-        {{#each groceryLists}}
-        <div>
-            <a href="/groceryLists/{{this._id}}">
-                <div class="grid-item">
-                    <h2>{{this.groceryName}}</h2>
-                    <p>Type: {{this.listType}}</p>
-                    <p>Created By: {{this.userName}}</p>
-                    <p><i>{{this.dateCreated}}</i></p>
-                </div>
-            </a>
-        </div>
-        {{/each}}
+    <div class="household-info">
+        <p>This week's shopper is: <strong>{{house.shopper}}</strong>!<br>
+            They will be responsible for shopping for the groceries on the <strong>community</strong> list for the
+            entire
+            household.</p>
+        <ul class="members-list">
+            <h2><strong>Members</strong></h2>
+            {{#each members}}
+            <li>
+                {{this}}
+            </li>
+            {{/each}}
+        </ul>
     </div>
-    {{else}}
-    <p>Your Household Has No Lists, Make Some Now!</p>
-    {{/if}}
+    <div class="grocery-ingo">
+        <h2 class="grocery"><strong>Groceries</strong></h2>
+        {{#if groceryLists.length}}
+        <div class="grid-container">
+            {{#each groceryLists}}
+            <div>
+                <a href="/groceryLists/{{this._id}}">
+                    <div class="grid-item">
+                        <h2>{{this.groceryName}}</h2>
+                        <p>Type: {{this.listType}}</p>
+                        <p>Created By: {{this.userName}}</p>
+                        <p><i>{{this.dateCreated}}</i></p>
+                    </div>
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <p>Your Household Has No Lists, Make Some Now!</p>
+        {{/if}}
+    </div>
 </div>
