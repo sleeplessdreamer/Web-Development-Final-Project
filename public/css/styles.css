@@ -221,3 +221,10 @@ h1 {
 a {
     text-decoration: none;
 }
+.error {
+    color: red; 
+    font-size: 10pt;
+}
+.hidden {
+    display: none;
+}
