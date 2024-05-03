@@ -317,6 +317,34 @@ try {
     console.log(e);
 }
 
+let newList = undefined;
+try {
+    newList = await lists.updateGroceryList(
+        userFour._id,
+        "GirlBosses",
+        "A List of Things",
+        "special occasion"
+    );
+} catch (e) {
+    console.log(e)
+}
+try {
+    newList = await lists.newGroceryList(
+        userFour._id,
+        "GirlBosses",
+        "A List of Things",
+        "special occasion"
+    );
+} catch (e) {
+    console.log(e)
+}
+try {
+    await lists.deleteGroceryList(newList._id.toString(), "GirlBosses");
+} catch (e) {
+    console.log(e)
+}
+
+
 console.log()
 
 
