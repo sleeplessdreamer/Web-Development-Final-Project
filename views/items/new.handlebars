@@ -1,0 +1,27 @@
+<div class = "form-container">
+    {{#if successMessage}}
+    <div class="success-message">
+        {{successMessage}}
+    </div>
+    {{/if}}
+    <form action="/items/createItem" method="POST">
+        <input type="hidden" id="listId" name="listId" value="{{listId}}">
+        <label for="itemName">Item Name:</label><br>
+        <input type="text" id="itemName" name="itemName"><br>
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" id="quantity" name="quantity"><br>
+        <label for="priority">Priority:</label><br>
+        <select id="priority" name="priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select><br>
+        <label for="category">Category:</label><br>
+        <input type="text" id="category" name="category"><br>
+        <label for="comments">Comments:</label><br>
+        <textarea id="comments" name="comments"></textarea><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <a href="/groceryLists/{{listId}}">Go Back to List</a>
+</div>
+

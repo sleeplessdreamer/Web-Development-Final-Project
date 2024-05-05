@@ -1,0 +1,17 @@
+<div class = "form-container">
+    <form action="/groceryLists/new" method="POST">
+        <label for="groceryName">Grocery List Name:</label><br>
+        <input type="text" id="groceryName" name="groceryName"><br>
+        <label for="listType">List Type:</label><br>
+        <select id="listType" name="listType">
+            <option value="community">Community</option>
+            <option value="special occasion">Special Occasion</option>
+            <option value="personal">Personal</option>
+        </select><br>
+        <input type="hidden" id="userId" name="userId" value="{{userId}}">
+        <input type="hidden" id="householdName" name="householdName" value="{{householdName}}">
+        <input type="submit" value="Create List">
+    </form>
+
+<a href="/items/createItem">Add New Item</a>
+</div>
