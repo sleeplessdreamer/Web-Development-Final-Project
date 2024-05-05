@@ -37,7 +37,7 @@ try {
 // Add Second User (valid)
 userTwo = await users.addUser(
     "adeshmukh@stevens.edu",
-    "cannotB3h@cked!",
+    "Test123!",
     "aditi",
     "deshmukh",
     21
@@ -47,7 +47,7 @@ let userThree;
 // Add another user with same name
 userThree = await users.addUser(
     "adeshmukh@gmail.com",
-    "Test123!",
+    "cannotB3h@cked!",
     "aditi",
     "deshmukh",
     21
@@ -319,16 +319,6 @@ try {
 
 let newList = undefined;
 try {
-    newList = await lists.updateGroceryList(
-        userFour._id,
-        "GirlBosses",
-        "A List of Things",
-        "special occasion"
-    );
-} catch (e) {
-    console.log(e)
-}
-try {
     newList = await lists.newGroceryList(
         userFour._id,
         "GirlBosses",
@@ -339,10 +329,21 @@ try {
     console.log(e)
 }
 try {
-    await lists.deleteGroceryList(newList._id.toString(), "GirlBosses");
+    newList = await lists.updateGroceryList(
+        newList._id.toString(),
+        "A List of Things",
+        "personal"
+    );
 } catch (e) {
     console.log(e)
 }
+let del = undefined;
+try {
+    del = await lists.deleteGroceryList(newList._id.toString(), "GirlBosses");
+} catch (e) {
+    console.log(e)
+}
+console.log(del)
 
 
 console.log()

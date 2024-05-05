@@ -37,6 +37,7 @@ const exportedMethods = {
     dateCreated = month + "/" + day + "/" + year;
 
     const newList = {
+      userId: userId,
       userName: userMember.firstName + " " + userMember.lastName,
       groceryName,
       listType,
@@ -101,6 +102,9 @@ const exportedMethods = {
     householdName = checkHouseholdName(householdName, "Household Name");
 
     let groceryList = await this.getGroceryList(id);
+    const userMember = await userData.getUserById(groceryList.userId);
+    if (!userMember) throw `User could not be found`;
+
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
     if (existingHousehold.length === 0) throw `Error: Household does not exist`;
@@ -114,7 +118,7 @@ const exportedMethods = {
     // update user to remove grocery list
     const userCollection = await users();
     updatedInfo = await userCollection.findOneAndUpdate(
-      { _id: groceryList.userId },
+      { _id: userMember._id },
       { $pull: { groceryLists: groceryList._id.toString() } }, // pull ID of list from user
       { returnDocument: 'after' }
     );
@@ -130,28 +134,47 @@ const exportedMethods = {
   },
 
   async updateGroceryList(
-    id,
+    listId,
     groceryName,
+    listType
   ) {
-//    should we make fields optional for update?
-//    if (!userId || !groceryName || !listType) {
-//      throw 'Must provide all fields to update Grocery List';
-//    }
+    //    should we make fields optional for update?
+    //    if (!userId || !groceryName || !listType) {
+    //      throw 'Must provide all fields to update Grocery List';
+    //    }
 
-    id = checkId(id, "Grocery List Id");
+    listId  = checkId(listId , "Grocery List Id");
     groceryName = checkString(groceryName, "Grocery List Name");
+    let currentList = await this.getGroceryList(listId);
 
-    let name = groceryName.trim();
-    if (name.length === 0) {
-      throw 'You must provide an input for the list name';
+    if (groceryName) {
+      groceryName = checkString(groceryName, "Grocery Name");
+    } else {
+      groceryName = currentList.groceryName;
     }
 
+    if (listType) {
+      if (listType.trim().toLowerCase() !== 'community')
+        if (listType.trim().toLowerCase() !== 'special occasion')
+          if (listType.trim().toLowerCase() !== 'personal') {
+            throw 'Not a valid list type';
+          }
+    } else {
+      listType = currentList.listType;
+    }
+    // list type and grocery name are only fields that can be updated
     const updateGroceryList = {
-      groceryName: name,
+      _id: currentList._id,
+      userId: currentList.userId,
+      userName: currentList.userName,
+      groceryName: groceryName,
+      listType: listType,
+      items: currentList.items,
+      dateCreated: currentList.dateCreated,
     }
 
     const groceryListCollection = await groceryLists();
-    const gList = await groceryListCollection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: updateGroceryList }, { returnDocument: 'after' });
+    const gList = await groceryListCollection.findOneAndUpdate({ _id: new ObjectId(listId) }, { $set: updateGroceryList }, { returnDocument: 'after' });
     if (!gList) throw 'Error: Could not update list'
 
     return updateGroceryList;
