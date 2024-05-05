@@ -186,7 +186,7 @@ router.route('/login')
     for (let listId in userProfile.groceryLists) {
       try {
         let groceryName = await groceryListData.getGroceryList(userProfile.groceryLists[listId]);
-        groceryList.push(groceryName.groceryName);
+        groceryList.push(groceryName);
       } catch (e) {
         errors.push(e);
         res.status(503).render("error", {

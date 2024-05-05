@@ -25,7 +25,7 @@ const exportedMethods = {
     category = category.trim();
     // if no comment supplied just make it an empty field don't get rid of the field
     if (!comments) {
-      comments = "";
+      comments = [];
     }
     const newItem = {
       _id: new ObjectId(),
@@ -126,10 +126,12 @@ const exportedMethods = {
     }
 
     if (updateObject.comments) {
-      checkString(updateObject.comments);
-      comments = updateObject.category.trim();
+      if (!Array.isArray(updateObject.comments)){
+        throw 'Error: Comments must be an array.'
+      }
+      comments = updateObject.comments;
     } else {
-      comments = "";
+      comments = [];
     }
 
     // cannot get rid of item ID when updating or change it
