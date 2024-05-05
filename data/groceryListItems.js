@@ -21,11 +21,17 @@ const exportedMethods = {
     checkAge(quantity, 'Quantity'); //Just a check is whole number function
     checkString(priority, "Priority");
     priority = priority.trim();
+    if (priority.toLowerCase() !== "low")
+      if (priority.toLowerCase() !== 'medium')
+        if (priority.toLowerCase() !== 'high')
+          throw `Error: invalid priority ranking`;
     checkString(category);
     category = category.trim();
     // if no comment supplied just make it an empty field don't get rid of the field
     if (!comments) {
       comments = [];
+    } else {
+      comments = checkString(comments, "Comments");
     }
     const newItem = {
       _id: new ObjectId(),
