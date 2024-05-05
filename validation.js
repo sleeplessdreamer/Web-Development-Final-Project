@@ -1,4 +1,4 @@
-import {ObjectId} from 'mongodb';
+import { ObjectId } from 'mongodb';
 import * as EmailValidator from 'email-validator';
 
 
@@ -30,6 +30,7 @@ const checkHouseholdName = (strVal, varName) => {
   if (strVal.length === 0) throw `Error: ${varName} cannot be an empty string or string with just spaces`;
   if (!isNaN(strVal)) throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
   if (strVal.includes(' ')) throw `Error: ${strVal} cannot contain spaces`;
+  strVal = strVal.slice(0, 1).toUpperCase() + strVal.slice(1).toLowerCase(); // store household name as uppercase and lower  
   return strVal;
 }
 
@@ -95,13 +96,13 @@ const checkName = (name, varName) => {
   if (name.length < 2 || name.length > 25) throw `Error: ${varName} must be between 2-25 chars`
   if (!isNaN(name)) throw `Error: ${name} is not a valid value for ${varName} as it only contains digits`;
   let regEx = /^[a-zA-Z]+(?:[- ][a-zA-Z]+)*$/; // allows for letters, spaces, and hyphens
-  if (!name.match(regEx)) throw `Error: invalid ${varName}`;
+  if (!name.match(regEx)) throw `Error: ${varName} cannot contain numbers or special characters`;
   name = name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase(); // store in database
   return name;
 }
 
 const checkAge = (age, varName) => {
-  if (!age) throw `Error: You must supply an ${varName}!`;  
+  if (!age) throw `Error: You must supply an ${varName}!`;
   if (typeof age !== 'number') {
     throw `${varName || 'provided variable'} is not a number`;
   }
@@ -114,5 +115,26 @@ const checkAge = (age, varName) => {
   return age;
 }
 
-export {checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge, checkHouseholdName};
+const checkCategory = (strVal, varName) => {
+  if (!strVal) throw `Error: You must supply a ${varName}!`;
+  if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
+  strVal = strVal.trim();
+  if (strVal.length === 0)
+    throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+  let regEx = /^[a-zA-Z]+(?:[ & ][a-zA-Z]+)*$/; // only allows for spaces in between letters or & symbols in
+  if (!strVal.match(regEx)) throw `Error: ${varName} cannot contain letters or special characters`;
+
+  // If wanted Dropdown menu of categories and when selecting 'Other' can create own category 
+  let categories = ["Alcoholic Beverages", "Baby", "Bakery", "Beverages", "Breakfast Foods", "Canned Goods", "Coffee & Tea", "Condiments & Dressing",
+    "Cooking & Baking", "Cookies & Crackers", "Dairy", "Deli", "Frozen Foods", "Health & Personal Care", "Household & Cleaning", "Juices", "Meat",
+    "Pasta & Grains", "Pet Supplies", "Produce", "Seafood", "Snacks", "Soda & Soft Drinks", "Spices & Seasonings", "Water", "Other"];
+  for (let i = 0; i <= categories.length - 1; i++) {
+    if (!strVal.includes(categories[i])) {
+      throw `Error: ${varName} must be one of those categories`;
+    }
+  }
+  return strVal;
+}
+
+export { checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge, checkHouseholdName };
 

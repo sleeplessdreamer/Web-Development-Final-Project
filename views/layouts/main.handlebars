@@ -7,20 +7,22 @@
 </head>
 <body>
     <header class="navigation">
-        {{#if authenticated}}
-            <a href="/users/logout" title="Log Out">Log Out</a>
-            {{#if household}}
-                <a href="/household/info" title="My Household Info">My Household</a>
-                <a href="/announcements" title="Announcements Tab">Announcements</a>
+        <nav role="navigation">
+            {{#if authenticated}}
+                <a href="/users/logout" title="Log Out">Log Out</a>
+                {{#if household}}
+                    <a href="/household/info" title="My Household Info">My Household</a>
+                    <a href="/announcements" title="Announcements Tab">Announcements</a>
+                {{else}}
+                    <a href="/household/new" title="Create or Join Household">Welcome</a>
+                {{/if}}
+                <a href="/users/profile" title="My Profile">My Profile</a>
             {{else}}
-                <a href="/household/new" title="Create or Join Household">Welcome</a>
+                <a href="/">Home</a>
+                <a href="/users/login" title="Log In">Log In</a>
+                <a href="/users/signup" title="Sign Up">Sign Up</a>
             {{/if}}
-            <a href="/users/profile" title="My Profile">My Profile</a>
-        {{else}}
-            <a href="/">Home</a>
-            <a href="/users/login" title="Log In">Log In</a>
-            <a href="/users/signup" title="Sign Up">Sign Up</a>
-        {{/if}}
+        </nav>
     </header>
     <main>
         {{{body}}}

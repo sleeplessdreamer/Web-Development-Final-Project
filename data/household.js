@@ -1,6 +1,7 @@
-import { checkId, checkString, checkHouseholdName } from '../validation.js'
+import { checkId, checkHouseholdName } from '../validation.js'
 import { household, users, announcements } from '../config/mongoCollections.js'; // import collection
 import userData from './users.js'
+import groceryData from './groceryList.js'
 import { ObjectId } from 'mongodb';
 
 const exportedMethods = {
@@ -9,7 +10,6 @@ const exportedMethods = {
     householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User ID");
 
-    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
     // Check if Household name already exists
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
@@ -19,17 +19,18 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
-    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
-    
+    if (userMember.householdName.length !== 0) throw `Error: User is already in a household`;
+
     // Create New Household
     let members = [userMember.firstName + " " + userMember.lastName], // put the user who created the id in the household
-      groceryLists = []
+      groceryLists = [];
     const newhouseHold = {
       householdName,
       members,
-      groceryLists
+      groceryLists,
+      shopper: members[0],
+      shopperAssigned: new Date()
     }
-
     // Insert New Household
     const insertInfo = await householdCollection.insertOne(newhouseHold);
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
@@ -57,8 +58,6 @@ const exportedMethods = {
     householdName = checkHouseholdName(householdName, "Household Name");
     userId = checkId(userId, "User Id");
 
-    householdName = householdName.slice(0, 1).toUpperCase() + householdName.slice(1).toLowerCase(); // store household name as uppercase and lower  
-
     //householdName = householdName.toLowerCase(); // case in-sensitive
     const householdCollection = await household();
     const existingHousehold = await householdCollection.find({ householdName: householdName }).toArray();
@@ -68,7 +67,7 @@ const exportedMethods = {
     const userMember = await userData.getUserById(userId);
     if (!userMember) throw `User could not be found`;
 
-    if (userMember.householdName.length !== 0 ) throw `Error: User is already in a household`;
+    if (userMember.householdName.length !== 0) throw `Error: User is already in a household`;
 
     // Get all exisitng household members
     const allMembers = await this.getAllUsersByHousehold(householdName);
@@ -174,6 +173,24 @@ const exportedMethods = {
     return insertInfo;
   },
 
+  async getAllHouseholds() {
+    const householdCollection = await household();
+    let householdList = await householdCollection
+      .find({})
+      .project({ _id: 0, householdName: 1 })   // just return the name of the household
+      .toArray();
+    if (!householdList) {
+      throw `Could not get all users`
+    }
+    // Create list of just first and last names
+    let houses = [];
+    householdList.forEach((object) => {
+      houses.push(object.householdName);
+    });
+    // Returns list of the names of households
+    return houses;
+  },
+
   async getHouseholdByName(householdName) {
     householdName = checkHouseholdName(householdName, 'Household Name');
     const householdCollection = await household();
@@ -187,7 +204,61 @@ const exportedMethods = {
     let members = await this.getHouseholdByName(householdName);
     members = members.members; // just get the members    
     return members;
-  }
+  },
 
+  async getAllGroceryListsByHousehold(householdName) {
+    householdName = checkHouseholdName(householdName, "Household Name");
+    let groceryLists = await this.getHouseholdByName(householdName);
+    groceryLists = groceryLists.groceryLists; // just get groceryLists, will be list of Ids
+    let allLists = [];
+    for (let i=0; i<=groceryLists.length-1; i++) {
+      let groceryList = await groceryData.getGroceryList(groceryLists[i].toString())
+      allLists.push(groceryList); // push to list
+    }
+    return allLists; // return list of all grocery lists for that household
+  },
+
+  // rotates shopper each week
+  async rotateShopper() {
+    const households = await this.getAllHouseholds();
+    for (let i = 0; i <= households.length - 1; i++) {
+      const currentHouse = await this.getHouseholdByName(households[i]);
+      const allMembers = currentHouse.members
+      let previousDate = currentHouse.shopperAssigned // reference point
+      const currentDate = new Date();
+      const week = 604800000; // week in milliseconds
+      // check if a week has passed and update 
+      if (currentDate - previousDate >= week) {
+        let shopperIndex;
+        if (allMembers !== undefined) {
+          for (let i = 0; i <= allMembers.length - 1; i++) {
+            if (allMembers[i] === currentHouse.shopper) {
+              shopperIndex = i; // find the current index of the shopper in the list of members
+            }
+          };
+        }
+        shopperIndex = (shopperIndex + 1) % allMembers.length; // rotate through each member
+        currentHouse.shopper = allMembers[shopperIndex]; // find name
+        previousDate = currentDate; // update date
+
+        // Update household info
+        const updatedHousehold = {
+          shopper: currentHouse.shopper,
+          shopperAssigned: previousDate
+        }
+        const householdCollection = await household();
+        const updatedInfo = await householdCollection.findOneAndUpdate(
+          { _id: new ObjectId(currentHouse._id) },
+          { $set: updatedHousehold },
+          { returnDocument: 'after' }
+        );
+        // if household cannot be updated method should throw
+        if (!updatedInfo) {
+          throw 'Error: Could not update household successfully';
+        }
+      }
+    }
+    return {rotateShopper: true};
+  }
 };
 export default exportedMethods;

@@ -1,0 +1,11 @@
+<div class = "single-list-view">
+    <h1>{{groceryList.groceryName}}</h1>
+    <p>List Type: {{groceryList.listType}}</p>
+    <ul>
+        {{#each groceryList.items}}
+        <li>{{itemName}} - Quantity: {{quantity}} - Priority: {{priority}} - Category: {{category}} - Comments: {{comments}}</li>
+        {{/each}}
+    </ul>
+
+    <a href="/items/createItem?listId={{listId}}">Add New Item</a>
+</div>

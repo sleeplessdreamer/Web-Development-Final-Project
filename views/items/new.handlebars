@@ -1,0 +1,33 @@
+<div class="form">
+    <h1>{{pageTitle}}</h1>
+    <div class="newItem">
+        <form action="/items/createItem" method="POST" class="newItem-form" id="newItem">
+            <input type="hidden" id="listId" name="listId" value="{{listId}}">
+            <label for="itemName">Item Name:</label><br>
+            <input type="text" id="itemName" name="itemName" value="{{groceryItem.itemName}}"><br>
+            <label for="quantity">Quantity:</label><br>
+            <input type="number" id="quantity" name="quantity" value="{{groceryItem.quantity}}"><br>
+            <label for="priority">Priority:</label><br>
+            <select id="priority" name="priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select><br>
+            <label for="category">Category:</label><br>
+            <input type="text" id="category" name="category" value="{{groceryItem.category}}"><br>
+            <label for="comments">Comments:</label><br>
+            <textarea id="comments" name="comments" value="{{groceryItem.comments}}"></textarea><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <a href="/groceryLists/{{listId}}">Go Back to List</a>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>

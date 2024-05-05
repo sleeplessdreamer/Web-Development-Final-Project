@@ -1,4 +1,5 @@
 <h1>{{pageTitle}}</h1>
+<h3>My Information</h3>
 <table class="profile-user">
     <tr>
         <th>First Name</th>
@@ -12,32 +13,55 @@
         <th>Age</th>
         <td>{{user.age}}</td>
     </tr>
-<table>
-</div>
+</table>
+
 <h3>My Grocery Lists</h3>
-<ul class="grocery-lists">
-    {{#each user.groceryLists}}
-    <li>
-        {{this}}
+<ul class="grocerys-list">
+    {{#each groceryList}}
+    <li class="groceryLists">
+        <div class="buttons">
+            <strong id="profile-grocery-name">{{this.groceryName}}</strong>
+            <a href="/groceryLists/edit/{{this._id}}" title="Edit Grocery list" id="edit-button">Edit</a>
+            <a href="/groceryLists/delete/{{this._id}}" title="Delete Grocery List" id="delete-button">Delete</a>
+        </div>
+        {{#if this.items.length}}
+        <ul>
+            {{#each this.items}}
+            <li>
+                {{this.itemName}}
+                <table>
+                    <tr>
+                        <th>Quantity:</th>
+                        <td>{{this.quantity}}</td>
+                        <th>Priority:</th>
+                        <td>{{this.priority}}</td>
+                    </tr>
+                </table>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p>This list has no items!</p>
+        {{/if}}
+        <p><i>{{this.dateCreated}}</i></p>
     </li>
     {{/each}}
 </ul>
 <h3>My Comments</h3>
-<ul class="comment-lists">
-    {{#each user.comments}}
-    <li>
+<ul class="comments-list">
+    {{#each comments}}
+    <li class="comments">
         {{this}}
     </li>
     {{/each}}
 </ul>
 <h3>My Announcements</h3>
-<ul class="announcement-lists">
-    {{#each user.announcements}}
-    <li>
+<ul class="announcements-list">
+    {{#each announcements}}
+    <li class="announcements-post">
         {{this.announcement}}<br>
         {{this.comment}}<br>
-        {{this.currentDate}}<i></i>
-
+        <i>{{this.currentDate}}</i>
     </li>
     {{/each}}
 </ul>

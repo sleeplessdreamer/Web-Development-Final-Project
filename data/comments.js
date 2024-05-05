@@ -1,14 +1,21 @@
-import {users, comments} from '../config/mongoCollections.js';
+import {users, comments, groceryLists} from '../config/mongoCollections.js';
 import {checkId} from '../validation.js';
 import userData from './users.js'
+import groceryListItemsData from './groceryListItems.js';
 import { ObjectId } from 'mongodb';
 
 const exportedMethods = {
     async newComment (
     userId,
+    listId,
+    itemId,
     text,
   ) {
     // error checking
+    checkId(listId, "list ID")
+    if (!text){
+      throw 'Error: please enter text'; 
+    }
     if (text.trim() == ""){
       throw 'please enter text';
     }
@@ -16,6 +23,10 @@ const exportedMethods = {
     if (!user){
       throw 'Error: User not found'; 
     }
+    checkId(listId, "list ID"); 
+    if (!ObjectId.isValid(userId)) throw `invalid User Id`
+    if (!ObjectId.isValid(listId)) throw `invalid list Id`
+    if (!ObjectId.isValid(itemId)) throw `invalid item Id`
     const commentCollection = await comments(); 
     const date = new Date();
     const entry = {
@@ -29,8 +40,35 @@ const exportedMethods = {
       throw 'Error: Could not add comment';
     }
     entry._id = entry._id.toString();
+
+    // get the corresponding item object
+    const groceryListList = await groceryLists();
+    const foundItem = await groceryListList.findOne(
+      { '_id': new ObjectId(listId)}
+    );
+    if (!foundItem){
+      throw 'Error: Item not found!';
+    }
+    /*
+    const name = foundItem.items[0].itemName
+    // then do .itemname
+    const item = await groceryListItemsData.getItem(listId, name); 
+    */
+    const updateObject = {
+      _id: entry._id,
+      comments: text
+    }
+    let updateInfo = await groceryListList.updateOne(
+      { 'items._id': new ObjectId(itemId)},
+      { $push: { 'items.$.comments': updateObject } },
+      { returnDocument: 'after' }
+    );
+    if (!updateInfo){
+      throw 'Error: update unsuccessful.'
+    }
+    //await groceryListItemsData.updateItem(itemId, updateObject);
     
-    return {commentAdded: true}; // do we need it to return the comment?
+    return entry;
   },
   
   async getComment(id) {
@@ -44,23 +82,72 @@ const exportedMethods = {
     return comment;
   },
 
-  async deleteComment(id) {
+  async deleteComment(listId, itemId, commentId) {
+    if (!ObjectId.isValid(listId)) throw `invalid list Id`
+    if (!ObjectId.isValid(itemId)) throw `invalid item Id`
+    if (!ObjectId.isValid(commentId)) throw `invalid comment Id`
     // serach database and remove comment
     const commentCollection = await comments(); 
-    const deleteInfo = await commentCollection.findOneAndDelete({ _id: new ObjectId(id) });
+    const deleteInfo = await commentCollection.findOneAndDelete({ _id: new ObjectId(commentId) });
     if (!deleteInfo){
       throw 'Error: Deletion unsuccessful'; 
     }
+    // must also delete from items
+    const groceryListList = await groceryLists();
+    const foundItem = await groceryListList.findOne(
+      { '_id': new ObjectId(listId)}
+    );
+    if (!foundItem){
+      throw 'Error: Item not found!';
+    }
+    let deletionInfo = await groceryListList.findOneAndUpdate(
+      { 'items._id': new ObjectId(itemId) },
+      { $pull: { 'items.$.comments': { _id: new ObjectId(commentId) }} }
+      );
+    //console.log(deletionInfo);
+    if (!deletionInfo) throw `Could not delete item with id of ${commentId}`;
+    
     return {commentDeleted: true};
+    // remove from groceryLIdt collection
   },
   
-  async updateComment(id, text) {
+  async updateComment(listId, itemId, commentId, text) {
+    if (!ObjectId.isValid(listId)) throw `invalid list Id`
+    if (!ObjectId.isValid(itemId)) throw `invalid item Id`
+    if (!ObjectId.isValid(commentId)) throw `invalid comment Id`
+    if (text.trim() === ''){
+      throw 'Error: Please enter text.';
+    }
+    // update in comment collection
     const commentCollection = await comments(); 
-    const comment = await commentCollection.findOneAndUpdate({ _id: new ObjectId(id) }, {$set: {text: text}}, { returnOriginal: false } );
+    const comment = await commentCollection.findOneAndUpdate({ _id: new ObjectId(commentId) }, {$set: {text: text}}, { returnOriginal: false } );
     if (!comment){
       throw 'Error: Comment not found.'
     }
-    return {commentUpdated: true}; // change this to return updated comment?
+    // now update grocerylist
+    const groceryListList = await groceryLists();
+    const foundList = await groceryListList.findOne(
+      { '_id': new ObjectId(listId)}
+    );
+    if (!foundList){
+      throw 'Error: Item not found!';
     }
+  
+   let updateObject = {
+    _id: new ObjectId(commentId),
+    comments: text
+   };
+    
+    let oldInfo = await groceryListList.findOneAndUpdate(
+      { 'items._id': new ObjectId(itemId)},
+      { $set: { "items.$.comments.$[comment]": updateObject }  },
+      // https://www.mongodb.com/docs/manual/reference/operator/update/positional-filtered/#update-nested-arrays-in-conjunction-with----
+      {arrayFilters: [{"comment._id": commentId}],
+      returnDocument: 'after' }
+    );
+
+    return oldInfo;
+    
+  }
   };
   export default exportedMethods;

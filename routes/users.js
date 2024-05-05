@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { userData } from '../data/index.js';
+import { userData, groceryListData } from '../data/index.js';
 import { checkId, checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
 import xss from 'xss';
@@ -21,10 +21,10 @@ router.route('/signup')
   .post(async (req, res) => {
     // request body
     const newUserData = req.body;
-    let firstName = newUserData.firstName;
-    let lastName = newUserData.lastName;
-    let email = newUserData.email;
-    let password = newUserData.password;
+    let firstName = xss(newUserData.firstName);
+    let lastName = xss(newUserData.lastName);
+    let email = xss(newUserData.email);
+    let password = xss(newUserData.password);
     let age = parseInt(newUserData.age);
     let errors = [];
     // Error Checking
@@ -108,8 +108,8 @@ router.route('/login')
   .post(async (req, res) => {
     // Get Request Body
     const userLogInData = req.body;
-    let email = userLogInData.email;
-    let password = userLogInData.password;
+    let email = xss(userLogInData.email);
+    let password = xss(userLogInData.password);
     let errors = [];
 
     // Error Checking
@@ -181,10 +181,29 @@ router.route('/login')
       return;
     }
     const userProfile = await userData.getUserById(user.userId); // get user by Id
+    let groceryList = [];
+    let errors = [];
+    for (let listId in userProfile.groceryLists) {
+      try {
+        let groceryName = await groceryListData.getGroceryList(userProfile.groceryLists[listId]);
+        groceryList.push(groceryName);
+      } catch (e) {
+        errors.push(e);
+        res.status(503).render("error", {
+          pageTitle: "Error",
+          errors: e,
+          hasErrors: true,
+          authenticated: true,
+          household: household
+        });
+        return;
+      }
+    }
     res.status(200).render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,
       user: userProfile, // render userprofile
+      groceryList: groceryList,
       household: household
     });
   });
