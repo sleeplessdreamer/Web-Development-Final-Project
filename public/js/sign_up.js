@@ -1,3 +1,4 @@
+(function ($) {
 const checkEmail = (email, varName) => {
     if (!email) throw `Error: You must supply a ${varName}!`;
     if (typeof email !== 'string') throw `Error: ${varName} must be a string!`;
@@ -57,94 +58,44 @@ const checkEmail = (email, varName) => {
     return;
   }
   
-  // then do a try catch in which errors are appended to error div
-  
-  // at the very end add multiple divs that are under each input field 
-  
-  document.getElementById('signup').addEventListener('submit', function(event) {
-      let errordiv = document.getElementById('error_div'); 
-      //errordiv.textContent = "heyhey"; 
-      // errordiv.classList.add()
-      
-  
-      //error.classList.add('hidden');
-      //$('.error').hide();
-      let firstname = document.getElementById('firstName').value;
-      let lastname = document.getElementById('lastName').value;
-      let age = document.getElementById('age').value; 
-      let password = document.getElementById('password').value; 
-      let email = document.getElementById('email').value; 
-  
-      // first name 
-      try{
-        let result = checkName(firstname, 'First Name'); 
-        let ferror = document.getElementById('ferror');
-        ferror.classList.add('hidden');
-      }catch(e){ 
-        event.preventDefault();
-        let ferror = document.getElementById('ferror');
-        ferror.textContent = e;
-        //ferror.classList.remove('hidden');
-        //error.classList.add('hidden');
-      }
-  // last name 
-      try{
-        let result = checkName(lastname, 'Last Name');  
-        let lerror = document.getElementById('lerror');
-        lerror.classList.add('hidden');
-      }catch(e){
-        event.preventDefault();
-        let lerror = document.getElementById('lerror');
-        lerror.textContent = e;
-      }
-  // email
-      try{
-        let result = checkEmail(email, 'Email Address');  
-        let eerror = document.getElementById('eerror');
-        eerror.classList.add('hidden');
-      }catch(e){
-        event.preventDefault();
-        let eerror = document.getElementById('eerror');
-        eerror.textContent = e;
-      }
-  
-      // age
-      try{
-        let result = checkAge(Number(age), 'Age');  
-        let aerror = document.getElementById('aerror');
-        aerror.classList.add('hidden');
-      }catch(e){
-        event.preventDefault();
-        let aerror = document.getElementById('aerror');
-        aerror.textContent = e;
-      }
-      
-      // password
-      try{
-        let result = checkPasswordSignUp(password, 'Password');  
-        let perror = document.getElementById('perror');
-        perror.classList.add('hidden');
-      }catch(e){
-        event.preventDefault();
-        let perror = document.getElementById('perror');
-        perror.textContent = e;
-      }
-      //signup.reset(); // do i need this? 
-      // ferror.reset(); 
-    }); 
-  
-    document.getElementById('signup').addEventListener('reset', function(event) {
-      //event.preventDefault();
-      let ferror = document.getElementById('ferror');
-      ferror.classList.add('hidden');
-      let perror = document.getElementById('perror');
-      perror.classList.add('hidden');
-      let lerror = document.getElementById('lerror');
-      lerror.classList.add('hidden');
-      let eerror = document.getElementById('eerror');
-      eerror.classList.add('hidden'); 
-      let aerror = document.getElementById('aerror');
-      aerror.classList.add('hidden');
-      
-    }); 
-  
+  $('#signup-form').submit(function (event) {
+    event.preventDefault();
+
+    let firstname = $('#firstName').val();
+    let lastname = $('#lastName').val();
+    let age = $('#age').val();
+    let email = $('#email').val();
+    let password = $('#password').val();
+
+    try {
+        checkName(firstname, 'First Name');
+        checkName(lastname, 'Last Name');
+        checkEmail(email, 'Email Address');
+        checkAge(Number(age), 'Age');
+        checkPasswordSignUp(password, 'Password');
+
+        
+        $.ajax({
+            method: 'POST',
+            url: '/users/signup',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                firstName: firstname,
+                lastName: lastname,
+                age: age,
+                email: email,
+                password: password
+            })
+        }).done(function (response) {
+            
+            window.location.href = '/users/profile';
+        }).fail(function (error) {
+             
+            $('#signup-error').text("Sign up failed: " + error.responseJSON.message);
+        });
+    } catch (error) {
+        
+        $('#signup-error').text(error);
+    }
+    });
+  })(window.jQuery);
