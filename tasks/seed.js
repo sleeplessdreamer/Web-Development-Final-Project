@@ -310,6 +310,16 @@ try {
     //console.log(e)
 }
 
+try {
+    await lists.newGroceryList(
+        userFour._id,
+        "GirlBosses",
+        "Ester Bday",
+        "special occasion"
+    );
+} catch (e) {
+    console.log(e)
+}
 
 try {
     await households.getAllGroceryListsByHousehold("Girlbosses");

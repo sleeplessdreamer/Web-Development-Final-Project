@@ -228,3 +228,16 @@ a {
 .hidden {
     display: none;
 }
+
+#edit-button {
+    padding-left: 500px;
+}
+
+#delete-button {
+    padding-left: 25px;
+    color: red;
+}
+
+#profile-grocery-name {
+    color:#78ba7c;
+}

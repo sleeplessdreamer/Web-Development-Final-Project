@@ -19,13 +19,35 @@
 <ul class="grocerys-list">
     {{#each groceryList}}
     <li class="groceryLists">
-        {{this}}
+        <strong id="profile-grocery-name">{{this.groceryName}}</strong>
+        <a href="/groceryLists/edit/{{this._id}}" title="Edit Grocery list" id="edit-button">Edit</a>
+        <a href="/groceryLists/delete/{{this._id}}" title="Delete Grocery List" id="delete-button">Delete</a>
+        {{#if this.items.length}}
+        <ul>
+            {{#each this.items}}
+            <li>
+                {{this.itemName}}
+                <table>
+                    <tr>
+                        <th>Quantity:</th>
+                        <td>{{this.quantity}}</td>
+                        <th>Priority:</th>
+                        <td>{{this.priority}}</td>
+                    </tr>
+                </table>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p>This list has no items!</p>
+        {{/if}}
+        <p><i>{{this.dateCreated}}</i></p>
     </li>
     {{/each}}
 </ul>
 <h3>My Comments</h3>
 <ul class="comments-list">
-    {{#each user.comments}}
+    {{#each comments}}
     <li class="comments">
         {{this}}
     </li>
@@ -33,12 +55,11 @@
 </ul>
 <h3>My Announcements</h3>
 <ul class="announcements-list">
-    {{#each user.announcements}}
+    {{#each announcements}}
     <li class="announcements-post">
         {{this.announcement}}<br>
         {{this.comment}}<br>
         <i>{{this.currentDate}}</i>
-
     </li>
     {{/each}}
 </ul>
