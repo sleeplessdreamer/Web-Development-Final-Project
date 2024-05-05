@@ -29,6 +29,7 @@ header {
     margin: auto;
     text-align: center;
 }
+
 .error-list {
     text-align: left;
 }
@@ -112,7 +113,8 @@ h6 {
     position: static;
 }
 
-h1, h2 {
+h1,
+h2 {
     padding-top: 20px;
     padding-bottom: 20px;
 }
@@ -151,7 +153,9 @@ h1 {
     margin: 5px;
 }
 
-.announcements-list, .grocerys-list, .comments-list {
+.announcements-list,
+.grocerys-list,
+.comments-list {
     border-radius: 5px;
     background-color: white;
     border-width: 1px;
@@ -163,13 +167,18 @@ h1 {
     list-style: none;
 }
 
-.announcement-post, .groceryLists, .comments {
+.announcement-post,
+.groceryLists,
+.comments {
     border-bottom: 1px solid #5d8770;
     padding: 10px;
 }
 
 /* https://codepen.io/fenwil/pen/oNjgQKw */
-.login, .signup {
+.login,
+.signup,
+.newItem,
+.newList {
     text-align: center;
     border-radius: 5px;
     background-color: white;
@@ -187,7 +196,7 @@ h1 {
 .grid-container {
     display: grid;
     grid-template-columns: auto auto auto;
-    gap: 10px; 
+    gap: 10px;
 }
 
 .grid-item a {
@@ -198,7 +207,7 @@ h1 {
 
 .grid-item {
     color: white;
-    background-color:#78ba7c;
+    background-color: #78ba7c;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 10px;
@@ -211,7 +220,7 @@ h1 {
 
 .grid-item:hover {
     text-decoration: none;
-    background-color:#a1d3a4;
+    background-color: #a1d3a4;
 }
 
 .grocery {
@@ -221,34 +230,29 @@ h1 {
 a {
     text-decoration: none;
 }
+
 .error {
-    color: red; 
+    color: red;
     font-size: 10pt;
 }
+
 .hidden {
     display: none;
 }
 
-.form-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000; /* Adjust the z-index to ensure the form appears on top */
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
+
 #edit-button {
     padding-left: 500px;
+    padding-top: 10;
+
 }
 
 #delete-button {
-    padding-left: 25px;
+    padding-left: 15px;
     color: red;
 }
 
+
 #profile-grocery-name {
-    color:#78ba7c;
+    color: #78ba7c;
 }

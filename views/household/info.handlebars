@@ -16,6 +16,7 @@
     </div>
     <div class="grocery-ingo">
         <h2 class="grocery"><strong>Groceries</strong></h2>
+        <a href="/groceryLists/new">Create New Grocery List</a>
         {{#if groceryLists.length}}
         <div class="grid-container">
             {{#each groceryLists}}
@@ -30,11 +31,9 @@
                 </a>
             </div>
             {{/each}}
-            <a href="/groceryLists/new">Create New Grocery List</a>
         </div>
         {{else}}
         <p>Your Household Has No Lists, Make Some Now!</p>
-        <a href="/groceryLists/new">Create New Grocery List</a>
         {{/if}}
     </div>
 </div>

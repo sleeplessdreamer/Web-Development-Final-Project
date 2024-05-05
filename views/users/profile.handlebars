@@ -19,9 +19,11 @@
 <ul class="grocerys-list">
     {{#each groceryList}}
     <li class="groceryLists">
-        <strong id="profile-grocery-name">{{this.groceryName}}</strong>
-        <a href="/groceryLists/edit/{{this._id}}" title="Edit Grocery list" id="edit-button">Edit</a>
-        <a href="/groceryLists/delete/{{this._id}}" title="Delete Grocery List" id="delete-button">Delete</a>
+        <div class="buttons">
+            <strong id="profile-grocery-name">{{this.groceryName}}</strong>
+            <a href="/groceryLists/edit/{{this._id}}" title="Edit Grocery list" id="edit-button">Edit</a>
+            <a href="/groceryLists/delete/{{this._id}}" title="Delete Grocery List" id="delete-button">Delete</a>
+        </div>
         {{#if this.items.length}}
         <ul>
             {{#each this.items}}
