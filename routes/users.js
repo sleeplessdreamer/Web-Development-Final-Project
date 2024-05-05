@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { userData } from '../data/index.js';
+import { userData, groceryListData } from '../data/index.js';
 import { checkId, checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
 import xss from 'xss';
@@ -181,10 +181,29 @@ router.route('/login')
       return;
     }
     const userProfile = await userData.getUserById(user.userId); // get user by Id
+    let groceryList = [];
+    let errors = [];
+    for (let listId in userProfile.groceryLists) {
+      try {
+        let groceryName = await groceryListData.getGroceryList(userProfile.groceryLists[listId]);
+        groceryList.push(groceryName.groceryName);
+      } catch (e) {
+        errors.push(e);
+        res.status(503).render("error", {
+          pageTitle: "Error",
+          errors: e,
+          hasErrors: true,
+          authenticated: true,
+          household: household
+        });
+        return;
+      }
+    }
     res.status(200).render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,
       user: userProfile, // render userprofile
+      groceryList: groceryList,
       household: household
     });
   });
