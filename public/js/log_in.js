@@ -1,3 +1,4 @@
+(function ($) {
 // client-side validation for logging in 
 const checkEmail = (email, varName) => {
     if (!email) throw `Error: You must supply a ${varName}!`;
@@ -22,38 +23,35 @@ const checkPasswordLogin = (password, varName) => {
     return;
 }
 
-// evert listener
-document.getElementById('login-form').addEventListener('submit', function(event) {
-    //let errordiv = document.getElementById('error_div'); 
-     // prevent submission 
-    let password = document.getElementById('password').value; 
-    let email = document.getElementById('email').value; 
-    let perror = document.getElementById('perror');
-    let eerror = document.getElementById('eerror');
+$('#login-form').submit(function (event) {
+    event.preventDefault();
+
+    let email = $('#login-email').val();
+    let password = $('#login-password').val();
+
     try {
-        let result = checkEmail(email, "Email Address"); 
-        eerror.classList.add('hidden');
-    } catch (e) {
-        event.preventDefault();
-        eerror.textContent = e; 
+        checkEmail(email, 'Email Address');
+        checkPasswordLogin(password, 'Password');
+
+        
+        $.ajax({
+            method: 'POST',
+            url: '/users/login',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                email: email,
+                password: password
+            })
+        }).done(function (response) {
+            
+            window.location.href = '/users/profile';
+        }).fail(function (error) {
+            
+            $('#login-error').text("Log in failed: " + error.responseJSON.message);
+        });
+    } catch (error) {
+        
+        $('#login-error').text(error);
     }
-    try{
-        let result = checkPasswordLogin(password, "Password");
-        perror.classList.add('hidden');
-    } catch(e){
-        event.preventDefault();
-        perror.textContent = e; 
-    }
-    //return; 
-}); 
-
-
-
-// reset
-document.getElementById('login-form').addEventListener('reset', function(event) {
-    //event.preventDefault();
-    let perror = document.getElementById('perror');
-    perror.classList.add('hidden');
-    let eerror = document.getElementById('eerror');
-    eerror.classList.add('hidden');  
-}); 
+});
+})(window.jQuery);
