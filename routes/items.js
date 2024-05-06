@@ -93,21 +93,30 @@ router.route('/createItem')
     }
   });
 
-router.route('/updateQuantity')
-  .post(async (req, res) => {
+  router.route('/increaseQ/:id')
+  .get(async (req, res) => {
     const user = req.session.user;
-    const { quantity, itemId } = req.body;
+    const listId = req.query.listId;
+    const itemId = req.params.id;
+
+    const successMessage = req.session.successMessage;
+    delete req.session.successMessage;
+
     try {
-      const updatedItem = await groceryItemsData.updateQuantity(itemId, quantity);
-      if (!updatedItem) {
-        throw `Error: could not update quantity`;
-      }
-      else {
-        return res.redirect('/lists');
-      }
+      // Retrieve the item data
+      const item = await groceryItemsData.getItemById(itemId);
+
+      // Increment the quantity
+      item.quantity += 1;
+
+      // Update the item in the database
+      await groceryItemsData.updateItem(itemId, item, user.userId);
+
+      // Redirect back to the grocery list page
+      res.redirect(`/groceryLists/${listId}`);
     } catch (error) {
-      // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
+      console.error(error);
+      res.status(500).json({ success: false, error: 'Failed to increase quantity.' });
     }
   });
 
@@ -157,7 +166,7 @@ router.route('/editItem/:id')
     try {
       nlistId = checkId(nlistId, "List Id")
     } catch (e) {
-      errors.push(e);
+      return res.status(200).redirect('/household/info');
     }
     try {
       itemName = checkString(itemName, "Item Name")
@@ -217,32 +226,20 @@ router.route('/editItem/:id')
     }
   });
 
-router.route('/updateQuantity')
-  .post(async (req, res) => {
-    const user = req.session.user;
-    const { quantity, itemId } = req.body;
-    try {
-      const updatedItem = await groceryItemsData.updateQuantity(itemId, quantity);
-      if (!updatedItem) {
-        throw `Error: could not update quantity`;
-      }
-      else {
-        return res.redirect('/lists');
-      }
-    } catch (error) {
-      // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
-    }
-  });
-
 router.route('/deleteItem/:id')
   .get(async (req, res) => {
     const user = req.session.user;
     const listId = req.query.listId;
-    const itemId = req.params.id;
+    let itemId = req.params.id;
     //console.log(listId);
     const successMessage = req.session.successMessage;
     delete req.session.successMessage;
+
+    try {
+      itemId = checkId(itemId, "Item Id");
+    } catch (e) {
+      return res.status(200).redirect('/household/info');
+    }
 
     res.status(200).render('items/delete', {
       pageTitle: 'Delete Item',
@@ -260,9 +257,16 @@ router.route('/deleteItem/:id')
     const user = req.session.user;
     const listId = req.query.listId;
     //console.log(listId);
-    const itemId = req.params.id;
+    let itemId = req.params.id;
     //console.log(itemId);
     let deleteItem;
+    let errors = [];
+    try {
+      itemId = checkId(itemId, "Item Id");
+    } catch (e) {
+      errors.push(e);
+      
+    }
     try {
       deleteItem = await groceryItemsData.deleteLItem(listId, itemId, user.userId);
       if (deleteItem.groceryItemDeleted === false) throw 'Error: Could not delete item.'

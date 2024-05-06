@@ -181,7 +181,7 @@ const exportedMethods = {
 
     userId = checkId(userId, "User Id");
 
-    let itemName, quantity, priority, category, comments;
+    let itemName, quantity, priority, category;
 
     if (updateObject.itemName) {
       checkString(updateObject.itemName);

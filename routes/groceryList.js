@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { groceryItemsData, groceryListData } from '../data/index.js';
+import { groceryItemsData, groceryListData, commentsData } from '../data/index.js';
 import { checkHouseholdName, checkString, checkId } from '../validation.js';
 import xss from 'xss';
 
@@ -83,7 +83,7 @@ router.route('/:id')
       })
       return;
     }
-    console.log(req.session.user); 
+    //console.log(req.session.user); 
     let name = req.session.user.firstName + " " + req.session.user.lastName;
     try {
       const groceryList = await groceryListData.getGroceryList(listId);

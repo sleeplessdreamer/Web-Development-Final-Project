@@ -179,7 +179,7 @@ router.route('/searchLists')
       const matchingLists = allLists.filter(list => {
         return list.items.some(item => item.itemName.toLowerCase().includes(searchQuery));
       });
-      console.log(matchingLists)
+      //console.log(matchingLists)
   
       res.render('household/searchResults', { pageTitle: 'Search Results', matchingLists, searchQuery, user, authenticated: true,
       household: true });
