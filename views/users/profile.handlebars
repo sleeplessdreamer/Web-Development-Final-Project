@@ -16,6 +16,10 @@
 </table>
 
 <h3>My Grocery Lists</h3>
+<form action="/groceryLists/search" method="GET">
+  <input type="text" name="query" placeholder="Search for an item...">
+  <button type="submit">Search</button>
+</form>
 <ul class="grocerys-list">
     {{#each groceryList}}
     <li class="groceryLists">
