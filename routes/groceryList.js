@@ -147,6 +147,7 @@ router.route('/edit/:id')
     }
   })
   .post(async (req, res) => {
+    const user = req.session.user;
     let editData = req.body;
     let groceryName, listType;
     let listId = req.params.id;
@@ -195,7 +196,7 @@ router.route('/edit/:id')
     }
     try {
       // Call the method to create a new grocery list item
-      let editListInfo = await groceryListData.updateGroceryList(listId, groceryName, listType);
+      let editListInfo = await groceryListData.updateGroceryList(listId, groceryName, listType, user.userId);
       if (!editListInfo) throw `Error could not edit list`;
       return res.status(200).redirect('/users/profile');
     } catch (error) {

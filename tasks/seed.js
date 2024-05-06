@@ -203,6 +203,7 @@ try {
 let newitem;
 try {
     newitem = await items.newItem(
+        userTwo._id.toString(),
         listOne._id.toString(),
         "Bananas",
         2,
@@ -216,6 +217,7 @@ try {
 //console.log(listOne); // after item is after
 try {//testing to see if creating a new item with the same name will update the item properly instead of creating a new item
     let dupeItem = await items.newItem(
+        userFive._id.toString(),
         listOne._id.toString(),
         "Bananas",
         3,
@@ -228,6 +230,7 @@ try {//testing to see if creating a new item with the same name will update the 
 }
 try {
     await items.newItem(
+        userFour._id.toString(),
         listOne._id.toString(),
         "Apples",
         2,
@@ -240,6 +243,7 @@ try {
 }
 try {
     await items.newItem(
+        userTwo._id.toString(),
         listOne._id.toString(),
         "Oranges",
         5,
@@ -255,43 +259,50 @@ try {
 } catch (e) {
     console.log(e);
 }
-let itemOne;
+let item;
 try {
-    itemOne = await items.getItem(newitem._id.toString(), "Bananas");
+    item = await items.getItemById(newitem.items[0]._id.toString());
 } catch (e) {
     console.log(e);
 }
 
 let update;
 try {
-    update = await items.updateItem(itemOne._id.toString(),
+    update = await items.updateItem(item._id.toString(),
         {
             itemName: "Banana",
             quantity: 5,
             priority: "High",
             category: "Fruits"
-        }
+        }, userFour._id
     );
 } catch (e) {
     console.log(e);
 }
 //console.log(update);
-let deleteitem;
+let thingy;
 try {
-    deleteitem = await items.deleteLItem(itemOne._id);
-    //console.log(deleteitem);
+    thingy = await lists.getGroceryList(listOne._id.toString());
+    //console.log(thingy);
+} catch (e) {
+    console.log(e);
+}
+let del2
+try {
+    del2 = await items.deleteLItem(listOne._id.toString(), item._id.toString(), userFive._id);
+    //console.log(del2);
 } catch (e) {
     console.log(e);
 }
 // putting it back
 try {
     await items.newItem(
+        userSix._id.toString(),
         listOne._id.toString(),
         "Banana",
         5,
         "High",
         "Fruits"
-        
     );
 } catch (e) {
     console.log(e);
@@ -361,7 +372,8 @@ try {
     newList = await lists.updateGroceryList(
         newList._id.toString(),
         "A List of Things",
-        "personal"
+        "personal",
+        userSix._id
     );
 } catch (e) {
     console.log(e)
@@ -386,7 +398,8 @@ try {
     console.log(e);
 }
 //console.log(a); // comment for announcement
-
+let announcement2 = await announcements.getAllAnnouncementsByHouseholdName(ourHousehold.householdName);
+//console.log(announcement2);
 console.log()
 
 

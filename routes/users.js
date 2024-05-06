@@ -201,7 +201,7 @@ router.route('/profile')
         return;
       }
     }
-    console.log(userProfile.announcements);
+    //console.log(userProfile.announcements);
     res.status(200).render('users/profile', {
       pageTitle: 'My Profile',
       authenticated: true,

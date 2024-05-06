@@ -1,10 +1,12 @@
-import { groceryLists } from "../config/mongoCollections.js";
 import groceryListData from "./groceryList.js";
+import { groceryLists, announcements, users } from "../config/mongoCollections.js";
 import { checkAge, checkId, checkString } from '../validation.js';
 import { ObjectId } from 'mongodb';
+import userData from './users.js'
 
 const exportedMethods = {
   async newItem(
+    userId,
     listId,
     itemName,
     quantity,
@@ -15,6 +17,7 @@ const exportedMethods = {
     if (category === undefined) {//comments are optional when initializing an item
       throw `All arguments must be passed`;
     }
+    userId = checkId(userId, "User Id");
     listId = checkId(listId, "List Id");
     itemName = checkString(itemName, "Item Name");
     quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
@@ -79,6 +82,14 @@ const exportedMethods = {
       { $set: updateItems },
       { returnDocument: 'after' }
     );
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `Error could not find user`;
+
+    if (foundItem === null) {
+      await this.createItemAnnouncement(newItem._id.toString(), listId, userId)
+    } else {
+      await this.createItemAnnouncement(foundItem._id.toString(), listId, userId)
+    }
     return updateInfo; // show entire list not just new item
   },
 
@@ -114,11 +125,10 @@ const exportedMethods = {
   async getItemById(itemId) {
     if (!itemId) throw `You must provide an item id`;
     if (!ObjectId.isValid(itemId)) throw `invalid item Id`;
-    console.log(itemId);
     const groceryListList = await groceryLists();
     const foundItem = await groceryListList.findOne(
       { 'items._id': new ObjectId(itemId) },
-      { projection: {'items.$': 1 } }
+      { projection: { 'items.$': 1 } }
     );
     if (!foundItem) {
       throw `Item not found`;
@@ -145,9 +155,14 @@ const exportedMethods = {
     return foundItem.items[0];
   },
 
-  async deleteLItem(listId, itemId) {
+  async deleteLItem(listId, itemId, userId) {
     if (!listId) throw `You must provide an list ID`;
     if (!ObjectId.isValid(listId)) throw `invalid list ID`;
+
+    itemId = checkId(itemId, "Item Id");
+    userId = checkId(userId, "User Id");
+
+    await this.deleteItemAnnouncement(itemId, listId, userId);
 
     const listCollection = await groceryLists();
     const list = await listCollection.findOne({ 'items._id': new ObjectId(itemId) });
@@ -160,11 +175,14 @@ const exportedMethods = {
     return { groceryItemDeleted: true };
   },
 
-  async updateItem(itemId, updateObject) {
+  async updateItem(itemId, updateObject, userId) {
     if (!itemId) throw `You must provide an item id`;
     if (!ObjectId.isValid(itemId)) throw `Invalid Review ID`;
 
+    userId = checkId(userId, "User Id");
+
     let itemName, quantity, priority, category, comments;
+
     if (updateObject.itemName) {
       checkString(updateObject.itemName);
       itemName = updateObject.itemName.trim();
@@ -182,13 +200,6 @@ const exportedMethods = {
       category = updateObject.category.trim();
     }
 
-    if (updateObject.comments) {
-      if (!Array.isArray(updateObject.comments)){
-        throw 'Error: Comments must be an array.'
-      }
-      comments = updateObject.comments;
-    }
-
     itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
     priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
     category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
@@ -196,21 +207,21 @@ const exportedMethods = {
     const groceryListList = await groceryLists();
     const foundItem = await groceryListList.findOne(
       { 'items._id': new ObjectId(itemId) },
-      { projection: {'items.$': 1 } }
+      { projection: { 'items.$': 1 } }
     );
     if (!foundItem) {
       throw `Item not found`;
     }
-    let listId = foundItem._id.toString(); 
+    let listId = foundItem._id.toString();
     // cannot get rid of item ID when updating or change it
     const updatedItem = {
       _id: new ObjectId(itemId),
       listId: listId,
-      itemName: itemName, 
+      itemName: itemName,
       quantity: quantity,
       priority: priority,
       category: category,
-      comments: comments
+      comments: foundItem.comments
     }
 
     let updateInfo = await groceryListList.findOneAndUpdate(
@@ -219,7 +230,7 @@ const exportedMethods = {
       { returnDocument: 'after' }
     );
     if (!updateInfo) throw `Update failed, could not find item with id ${itemId}`;
-    
+
     // List is Sorted by Priority
     const sortedItems = await this.getAllItems(listId);
     const updateItems = {
@@ -231,10 +242,125 @@ const exportedMethods = {
       { returnDocument: 'after' }
     );
 
-    return updateInfo;
-    
-  },
+    await this.updateItemAnnouncement(itemId, listId, userId);
 
+    return updateInfo;
+
+  },
+  async createItemAnnouncement(itemId, groceryListId, userId) {
+    itemId = checkId(itemId, "Item Id");
+    userId = checkId(userId, "User Id");
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await groceryListData.getGroceryList(groceryListId);
+    if (!groceryList) throw `Grocery list could not be found`;
+
+    const foundItem = await this.getItemById(itemId);
+    if (!foundItem) throw `Grocery Item could not be found`;
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " added '" + foundItem.itemName + "' to '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), comment = "", householdName = userMember.householdName, action = 'createItem';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList: groceryList.groceryName,
+      groceryItem: foundItem.itemName,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+
+    return insertInfo;
+  },
+  async deleteItemAnnouncement(itemId, groceryListId, userId) {
+    itemId = checkId(itemId, "Item Id");
+    userId = checkId(userId, "User Id");
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await groceryListData.getGroceryList(groceryListId);
+    if (!groceryList) throw `Grocery list could not be found`;
+
+    const foundItem = await this.getItemById(itemId);
+    if (!foundItem) throw `Grocery Item could not be found`;
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " removed '" + foundItem.itemName + "' from '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), comment = "", householdName = userMember.householdName, action = 'deleteItem';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList: groceryList.groceryName,
+      groceryItem: foundItem.itemName,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+
+    return insertInfo;
+  },
   async updateQuantity(itemId, incQuantity) {
     if (!itemId) {
       throw `You must provide an item ID`;
@@ -283,6 +409,63 @@ const exportedMethods = {
     else {
       return { updated: true };
     }
+  },
+  async updateItemAnnouncement(itemId, groceryListId, userId) {
+    itemId = checkId(itemId, "Item Id");
+    userId = checkId(userId, "User Id");
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await groceryListData.getGroceryList(groceryListId);
+    if (!groceryList) throw `Grocery list could not be found`;
+
+    const foundItem = await this.getItemById(itemId);
+    if (!foundItem) throw `Grocery Item could not be found`;
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " edited an item in '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), comment = "", householdName = userMember.householdName, action = 'editItem';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList: groceryList.groceryName,
+      groceryItem: foundItem.itemName,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+
+    return insertInfo;
   }
 };
 export default exportedMethods;

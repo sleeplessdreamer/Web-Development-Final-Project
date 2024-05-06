@@ -139,7 +139,8 @@ const exportedMethods = {
   async updateGroceryList(
     listId,
     groceryName,
-    listType
+    listType,
+    userId
   ) {
     //    should we make fields optional for update?
     //    if (!userId || !groceryName || !listType) {
@@ -147,6 +148,7 @@ const exportedMethods = {
     //    }
     listId = checkId(listId, "Grocery List Id");
     groceryName = checkString(groceryName, "Grocery List Name");
+    userId = checkId(userId, "User Id");
     let currentList = await this.getGroceryList(listId);
 
     if (groceryName) {
@@ -179,6 +181,7 @@ const exportedMethods = {
     const gList = await groceryListCollection.findOneAndUpdate({ _id: new ObjectId(listId) }, { $set: updateGroceryList }, { returnDocument: 'after' });
     if (!gList) throw 'Error: Could not update list'
 
+    await this.updateListAnnouncement(listId, userId);
     return updateGroceryList;
   },
   async createListAnnouncement(groceryListId, userId) {
@@ -286,6 +289,60 @@ const exportedMethods = {
       throw 'Error: Could not update user successfully';
     }
     updatedInfo._id = updatedInfo._id.toString();
+    return insertInfo;
+  },
+  async updateListAnnouncement(groceryListId, userId) {
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+    userId = checkId(userId, "User Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await this.getGroceryList(groceryListId);
+    if (!groceryList) throw  `Grocery list could not be found`;
+
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " edited the list '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='editList';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList,
+      groceryItem,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+
     return insertInfo;
   }
 
