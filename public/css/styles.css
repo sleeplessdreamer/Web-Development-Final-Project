@@ -256,3 +256,60 @@ a {
 #profile-grocery-name {
     color: #78ba7c;
 }
+
+.itemname{
+    font-weight: bold;
+}
+.item-info{
+    font-size: medium;
+}
+
+.list-items li {
+    list-style-type: none;
+   
+  }
+
+.list-items li .itemname{
+    color: #061701;
+    margin-right: 10px;
+    font-size: x-large; 
+ }
+
+
+.list-items li .itemname::before {
+    content: "\2610"; 
+    color: #061701;
+    margin-right: 10px;
+ }
+ .item-info{
+    margin-left: 30px;
+ }
+
+ .list-items li {
+    margin-bottom: 20px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    padding: 10px; 
+    background-color: #e6f5e6;
+  }
+
+  .listype{
+    font-size: smaller; 
+  }
+
+  .links{
+    margin-top: 12px; 
+    margin-left:200px;
+    display: flex;
+    justify-content: right;
+  }
+  .links a {
+    margin-right: 30px; 
+    text-decoration: none; 
+    color: #072814;
+    padding: 5px 5px;
+  }
+
+  .links a:hover{
+    background-color: #ffffff;
+  }
