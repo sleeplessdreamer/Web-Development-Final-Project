@@ -114,8 +114,7 @@ router.route('/editItem/:id')
     const user = req.session.user;
     const listId = req.query.listId;
     const itemId = req.params.id;
-    console.log('list Id:', listId);
-    console.log('item id', itemId);
+
     const successMessage = req.session.successMessage;
     delete req.session.successMessage;
 
@@ -214,6 +213,34 @@ router.route('/editItem/:id')
     }
   }
   );
+
+  router.route('/increaseQ/:id')
+  .get(async (req, res) => {
+    const user = req.session.user;
+    const listId = req.query.listId;
+    const itemId = req.params.id;
+
+    const successMessage = req.session.successMessage;
+    delete req.session.successMessage;
+
+    try {
+      // Retrieve the item data
+      const item = await groceryItemsData.getItemById(itemId);
+
+      // Increment the quantity
+      item.quantity += 1;
+
+      // Update the item in the database
+      await groceryItemsData.updateItem(itemId, item);
+
+      // Redirect back to the grocery list page
+      res.redirect(`/groceryLists/${listId}`);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: 'Failed to increase quantity.' });
+    }
+  });
+
 
 router.route('/deleteItem/:id')
   .get(async (req, res) => {
