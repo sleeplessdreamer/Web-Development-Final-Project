@@ -7,7 +7,6 @@ import xss from 'xss';
 router.route('/new')//hasn't been tested
   .get(async (req, res) => {
     const user = req.session.user;
-
     try {
       res.status(200).render('groceryList/new', {
         pageTitle: 'New Grocery List',
@@ -17,7 +16,7 @@ router.route('/new')//hasn't been tested
       });
     } catch (e) {
       console.error('Error displaying new grocery list form:', e);
-      res.status(500).render('error', { error: e });
+      res.status(500).render('error', { pageTitle: 'Error', errors: e, authenticated: true, household: true });
     }
   })
   .post(async (req, res) => {
@@ -61,15 +60,28 @@ router.route('/new')//hasn't been tested
       return res.redirect('/household/info');
     } catch (error) {
       // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
+      res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
     }
   });
 
 router.route('/:id')
   .get(async (req, res) => {
     const user = req.session.user;
-    const listId = req.params.id;
-
+    let listId = req.params.id;
+    let errors = [];
+    try {
+      listId = checkId(listId, "Grocery List Id");
+    } catch (e) {
+      errors.push(e);
+      res.status(400).render('error', {
+        pageTitle: "Error",
+        errors: errors,
+        hasErrors: true,
+        authenticated: true,
+        household: true
+      })
+      return;
+    }
     try {
       const groceryList = await groceryListData.getGroceryList(listId);
       res.status(200).render('groceryList/single', {
@@ -82,19 +94,42 @@ router.route('/:id')
       });
     } catch (e) {
       //console.error('Error fetching grocery list:', e);
-      res.status(500).render('error', { error: e });
+      res.status(500).render('error', { pageTitle: 'Error', errors: e, authenitcated: true, household: true });
     }
   });
+
+router.route('/delete')
+.get(async (req, res) => {
+  return res.redirect('household/info');
+})
 
 router.route('/edit/:id')
   .get(async (req, res) => {
     const user = req.session.user;
-    const listId = req.params.id;
+    let listId = req.params.id;
     let groceryList;
+    let errors = [];
+    try {
+      listId = checkId(listId, "Grocery List Id");
+    } catch (e) {
+      errors.push(e);
+    }
     try {
       groceryList = await groceryListData.getGroceryList(listId);
     } catch (e) {
-      res.status(500).render('error', { error: e });
+      errors.push(e);
+    }
+    if (errors.length > 0) {
+      res.status(400).render('groceryList/edit', {
+        pageTitle: "Edit Grocery List",
+        errors: errors,
+        hasErrors: true,
+        listId: listId,
+        groceryList: groceryList,
+        authenticated: true,
+        household: true
+      });
+      return;
     }
     try {
       res.status(200).render('groceryList/edit', {
@@ -107,7 +142,7 @@ router.route('/edit/:id')
       });
     } catch (e) {
       //console.error('Error displaying edit grocery list form:', e);
-      res.status(500).render('error', { error: e });
+      return res.status(500).render('error', { pageTitle: "Error", errors: e, authenticated: true, household: true });
     }
   })
   .post(async (req, res) => {
@@ -161,12 +196,94 @@ router.route('/edit/:id')
       // Call the method to create a new grocery list item
       let editListInfo = await groceryListData.updateGroceryList(listId, groceryName, listType);
       if (!editListInfo) throw `Error could not edit list`;
-      return res.redirect('/household/info');
+      return res.status(200).redirect('/users/profile');
     } catch (error) {
       // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
+      return res.status(500).render('error', { pageTitle: 'Error', errors: error, authenitcated: true, household: true });
     }
   })
+
+router.route('/delete/:id')
+  .get(async (req, res) => {
+    const user = req.session.user;
+    let listId = req.params.id;
+    let groceryList;
+    let errors = [];
+    try {
+      listId = checkId(listId, "Grocery List Id");
+    } catch (e) {
+      errors.push(e);
+    }
+    try {
+      groceryList = await groceryListData.getGroceryList(listId);
+    } catch (e) {
+      errors.push(e);
+    }
+    // If any errors then display them
+    if (errors.length > 0) {
+      res.status(400).render('groceryList/delete', {
+        pageTitle: "Delete Grocery List",
+        errors: errors,
+        hasErrors: true,
+        listId: listId,
+        groceryList: groceryList,
+        authenticated: true,
+        household: true
+      });
+      return;
+    }
+    try {
+      res.status(200).render('groceryList/delete', {
+        pageTitle: 'Delete Grocery List',
+        user,
+        authenticated: true,
+        groceryList: groceryList,
+        listId: listId,
+        household: true
+      });
+      return;
+    } catch (e) {
+      //console.error('Error displaying edit grocery list form:', e);
+      return res.status(500).render('error', { pageTitle: "Error", errors: e, authenticated: true, household: true });
+    }
+  })
+  .post(async (req, res) => {
+    let listId = req.params.id;
+    const user = req.session.user;
+    let groceryList;
+    let errors = [];
+    try {
+      listId = checkId(listId, "Grocery List Id");
+    } catch (e) {
+      errors.push(e);
+    }
+    try {
+      groceryList = await groceryListData.getGroceryList(listId);
+    } catch (e) {
+      errors.push(e);
+    }
+    // If any errors then display them
+    if (errors.length > 0) {
+      res.status(400).render('groceryList/new', {
+        pageTitle: "New Grocery List",
+        errors: errors,
+        hasErrors: true,
+        groceryList: groceryList,
+        listId: listId,
+        authenticated: true,
+        household: true
+      });
+      return;
+    }
+    try {
+      let del = await groceryListData.deleteGroceryList(listId, user.householdName);
+      if (!del) throw `Error: Could not delete grocery list`;
+      return res.status(200).redirect('/users/profile');
+    } catch (e) {
+      return res.status(500).render('error', { pageTitle: 'Error', errors: e, authenticated: true, household: true });
+    }
+  })
+
 
 
 export default router;
