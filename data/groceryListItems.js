@@ -67,21 +67,31 @@ const exportedMethods = {
       );
     }
     if (!updateInfo) throw 'Error: update unsuccessful';
+
+    // List is Sorted by Priority
+    const sortedItems = await this.getAllItems(listId);
+    const updateItems = {
+      items: sortedItems
+    }
+    updateInfo = await groceryListList.findOneAndUpdate(
+      { _id: new ObjectId(listId) },
+      { $set: updateItems },
+      { returnDocument: 'after' }
+    );
     return updateInfo; // show entire list not just new item
   },
 
   async getAllItems(groceryListId) {
-    if (!groceryListId){
+    if (!groceryListId) {
       throw `You must provide an list id`;
     }
-    if (!ObjectId.isValid(groceryListId)){
+    if (!ObjectId.isValid(groceryListId)) {
       throw `invalid list ID`;
     }
 
     let targetList = await groceryListData.getGroceryList(groceryListId);
 
     let sortedList = [];
-    const priorities = ['low', 'medium', 'high'];
     targetList.items.forEach((item) => {
       if (item.priority.toLowerCase() === 'high') {
         sortedList.push(item);
@@ -100,12 +110,10 @@ const exportedMethods = {
     return sortedList;
   },
 
-  async getItemById(targetListID, itemId){
-    if (!targetListID) throw `You must provide an list id`;
-    if (!ObjectId.isValid(targetListID)) throw `invalid list Id`;
-    console.log(targetListID);
+  async getItemById(itemId) {
+    if (!itemId) throw `You must provide an item id`;
+    if (!ObjectId.isValid(itemId)) throw `invalid item Id`;
     console.log(itemId);
-
     const groceryListList = await groceryLists();
     const foundItem = await groceryListList.findOne(
       { 'items._id': new ObjectId(itemId) }
@@ -138,7 +146,7 @@ const exportedMethods = {
   async deleteLItem(listId, itemId) {
     if (!listId) throw `You must provide an list ID`;
     if (!ObjectId.isValid(listId)) throw `invalid list ID`;
-    
+
     const listCollection = await groceryLists();
     const list = await listCollection.findOne({ 'items._id': new ObjectId(itemId) });
     const deletionInfo = await listCollection.updateOne(
@@ -146,6 +154,7 @@ const exportedMethods = {
       { $pull: { items: { _id: new ObjectId(itemId) } } }
     );
     if (!deletionInfo) throw `Could not delete item with id of ${itemId}`;
+
     return { groceryItemDeleted: true };
   },
 
@@ -205,22 +214,22 @@ const exportedMethods = {
   },
 
   async updateQuantity(itemId, incQuantity) {
-    if(!itemId){
+    if (!itemId) {
       throw `You must provide an item ID`;
     }
-    else{
+    else {
       const checkID = checkId(itemId, 'Item ID');
-      if(checkID === undefined){
+      if (checkID === undefined) {
         throw `You must provide an item ID`;
       }
     }
 
-    if(!incQuantity){
+    if (!incQuantity) {
       throw `You must provide a quantity`;
     }
-    else{
+    else {
       const checkQuant = checkAge(incQuantity, 'Quantity');
-      if(checkQuant === undefined){
+      if (checkQuant === undefined) {
         throw `You must provide a quantity`;
       }
     }
@@ -228,15 +237,15 @@ const exportedMethods = {
     const groceryListt = await groceryLists();
     const item = groceryListt.items.find(item => item._id === itemId);
 
-    if(!item){
+    if (!item) {
       throw `Could not find item with id of ${itemId}`;
     }
 
     const finalQuant = item.quantity + incQuantity;
-    if(incQuantity === -1 && item.quantity === 1){
+    if (incQuantity === -1 && item.quantity === 1) {
       this.deleteLItem(itemId);
     }
-    if(finalQuant < 0){
+    if (finalQuant < 0) {
       throw `Quantity cannot be less than 0`;
     }
 
@@ -246,10 +255,10 @@ const exportedMethods = {
       { returnDocument: 'after' }
     );
 
-    if(updatedItem.modifiedCount === 0){
+    if (updatedItem.modifiedCount === 0) {
       throw `Could not update quantity for item with id of ${itemId}`;
     }
-    else{
+    else {
       return { updated: true };
     }
   }

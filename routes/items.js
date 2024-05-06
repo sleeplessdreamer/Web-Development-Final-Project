@@ -114,13 +114,14 @@ router.route('/editItem/:id')
     const user = req.session.user;
     const listId = req.query.listId;
     const itemId = req.params.id;
-    //console.log(listId);
+    console.log('list Id:', listId);
+    console.log('item id', itemId);
     const successMessage = req.session.successMessage;
     delete req.session.successMessage;
 
     let oldData;
     try {
-      oldData = await groceryItemsData.getItemById(listId, itemId);
+      oldData = await groceryItemsData.getItemById(itemId);
     } catch (e) {
       console.log(e);
     }
@@ -140,7 +141,6 @@ router.route('/editItem/:id')
   .post(async (req, res) => {
     // get List Id
     const listId = req.query.listId;
-    console.log(listId);
     const itemId = req.params.id;
     const newInput = req.body;
     //console.log(newInput);
@@ -201,13 +201,12 @@ router.route('/editItem/:id')
     }
     itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
     priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
-    category = checkString(category);
     category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
     newInput.quantity = Number(newInput.quantity);
     newInput.comments = [newInput.comments];
     // now update
     try {
-      let result = await groceryItemsData.updateItem(itemId, newInput);
+      let result = await groceryItemsData.updateItem(itemId, newInput, listId);
       if (!result) throw `Error: could not update item`;
       return res.redirect(`/groceryLists/${listId}`);
     } catch (e) {
