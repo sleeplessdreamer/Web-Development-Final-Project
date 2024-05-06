@@ -3,10 +3,8 @@
     <p>List Type: {{groceryList.listType}}</p>
     <ul class ="list-items">
         {{#each groceryList.items}}
-        <li>{{itemName}} - Quantity: {{quantity}} - Priority: {{priority}} - Category: {{category}} - Comments: {{comments}}</li>
         <button onclick = "updateQuantity('{{this._id}}', 1)"> +1 Quantity  </button>
         <button onclick = "updateQuantity('{{this._id}}', -1)"> -1 Quantity  </button>
-        {{/each}}
         <li>
             <div class ='itemname'>{{itemName}}</div>
             <div class="item-info">
@@ -16,7 +14,7 @@
                 <a href="/items/editItem/{{_id}}?listId={{../groceryList._id}}" class="edit-link">Edit</a>
                 <a href="/items/deleteItem/{{_id}}?listId={{../groceryList._id}}">Delete</a>
             </div>      
-            {{/each}}
+        {{/each}}
         </li>
     </ul>
 
