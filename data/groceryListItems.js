@@ -127,16 +127,18 @@ const exportedMethods = {
     return foundItem.items[0];
   },
 
-  async deleteLItem(id) {
-    if (!id) throw `You must provide an item ID`;
-    if (!ObjectId.isValid(id)) throw `invalid item ID`;
+  async deleteLItem(listId, itemId) {
+    if (!listId) throw `You must provide an list ID`;
+    if (!itemId) throw `You must provide an item ID`;
+    if (!ObjectId.isValid(itemId)) throw `invalid item ID`;
+    if (!ObjectId.isValid(listId)) throw `invalid list ID`;
     const listCollection = await groceryLists();
-    const list = await listCollection.findOne({ 'items._id': id });
+    const list = await listCollection.findOne({ 'items._id': new ObjectId(itemId) });
     const deletionInfo = await listCollection.updateOne(
-      { _id: list._id },
-      { $pull: { items: { _id: id } } }
+      { _id: new ObjectId(listId) },
+      { $pull: { items: { _id: new ObjectId(itemId) } } }
     );
-    if (!deletionInfo) throw `Could not delete item with id of ${id}`;
+    if (!deletionInfo) throw `Could not delete item with id of ${itemId}`;
     return { groceryItemDeleted: true };
   },
 

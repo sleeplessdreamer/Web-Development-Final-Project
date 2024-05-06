@@ -194,4 +194,40 @@ router.route('/updateQuantity')
     }
 );
 
+router.route('/deleteItem/:id')
+  .get(async (req, res) => {
+    const user = req.session.user;
+    const listId = req.query.listId;
+    const itemId = req.params.id;
+    //console.log(listId);
+    const successMessage = req.session.successMessage;
+    delete req.session.successMessage;
+
+    res.status(200).render('items/delete', {
+      pageTitle: 'Delete Item',
+      user,
+      authenticated: true,
+      household: true,
+      listId: listId,
+      itemId: itemId,
+      //oldData: oldData,
+      successMessage: successMessage
+    });
+
+  })
+  .post(async (req, res) =>{
+    const listId = req.query.listId; 
+    console.log(listId);
+    const itemId = req.params.id;
+    console.log(itemId);
+    let deleteItem; 
+    try {
+      deleteItem = await groceryItemsData.deleteLItem(listId, itemId);
+      if (deleteItem.groceryItemDeleted === false) throw 'Error: Could not delete item.'
+      return res.redirect(`/groceryLists/${listId}`);
+    } catch (e){
+      console.log(e); 
+    }
+  });
+
 export default router;

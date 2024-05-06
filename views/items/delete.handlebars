@@ -1,0 +1,21 @@
+<div class="form">
+    <h1>{{pageTitle}}</h1>
+    <div class="deleteItem">
+        <h2> Are you sure you would like to delete this item?</h2>
+        <form action="/items/deleteItem/{{itemId}}?listId={{listId}}" method="POST" class="deleteItem-form" id="deleteItem">
+            <input type="hidden" id="listId" name="listId" value="{{listId}}">
+            <input type="hidden" id="itemId" name="itemId" value="{{itemId}}">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <a href="/groceryLists/{{listId}}">Go Back to List</a>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>
