@@ -15,7 +15,7 @@ const exportedMethods = {
     if (category === undefined) {//comments are optional when initializing an item
       throw `All arguments must be passed`;
     }
-
+    listId = checkId(listId, "List Id");
     itemName = checkString(itemName, "Item Name");
     quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
     priority = checkString(priority, "Priority");
@@ -23,9 +23,10 @@ const exportedMethods = {
       if (priority.toLowerCase() !== 'medium')
         if (priority.toLowerCase() !== 'high')
           throw `Error: invalid priority ranking`;
+    category = checkString(category);
+
     itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
     priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
-    category = checkString(category);
     category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
 
     // if no comment supplied just make it an empty field don't get rid of the field
@@ -116,7 +117,8 @@ const exportedMethods = {
     console.log(itemId);
     const groceryListList = await groceryLists();
     const foundItem = await groceryListList.findOne(
-      { 'items._id': new ObjectId(itemId) }
+      { 'items._id': new ObjectId(itemId) },
+      { projection: {'items.$': 1 } }
     );
     if (!foundItem) {
       throw `Item not found`;
@@ -185,32 +187,52 @@ const exportedMethods = {
         throw 'Error: Comments must be an array.'
       }
       comments = updateObject.comments;
-    } else {
-      comments = [];
     }
 
+    itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
+    priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
+    category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
+
+    const groceryListList = await groceryLists();
+    const foundItem = await groceryListList.findOne(
+      { 'items._id': new ObjectId(itemId) },
+      { projection: {'items.$': 1 } }
+    );
+    if (!foundItem) {
+      throw `Item not found`;
+    }
+    let listId = foundItem._id.toString(); 
     // cannot get rid of item ID when updating or change it
     const updatedItem = {
       _id: new ObjectId(itemId),
-      itemName: itemName,
+      listId: listId,
+      itemName: itemName, 
       quantity: quantity,
       priority: priority,
       category: category,
       comments: comments
     }
 
-    const groceryListList = await groceryLists();
     let updateInfo = await groceryListList.findOneAndUpdate(
       { 'items._id': new ObjectId(itemId) },
       { $set: { 'items.$': updatedItem } },
       { returnDocument: 'after' }
     );
-    if (!updateInfo){
-      throw `Update failed, could not find item with id ${itemId}`;
+    if (!updateInfo) throw `Update failed, could not find item with id ${itemId}`;
+    
+    // List is Sorted by Priority
+    const sortedItems = await this.getAllItems(listId);
+    const updateItems = {
+      items: sortedItems
     }
-    else{
-      return updateInfo;
-    }
+    updateInfo = await groceryListList.findOneAndUpdate(
+      { _id: new ObjectId(listId) },
+      { $set: updateItems },
+      { returnDocument: 'after' }
+    );
+
+    return updateInfo;
+    
   },
 
   async updateQuantity(itemId, incQuantity) {
