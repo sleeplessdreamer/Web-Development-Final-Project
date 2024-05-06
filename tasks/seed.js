@@ -349,12 +349,24 @@ try {
 }
 let del = undefined;
 try {
-    del = await lists.deleteGroceryList(newList._id.toString(), "GirlBosses");
+    del = await lists.deleteGroceryList(newList._id.toString(), "GirlBosses", userThree._id.toString());
 } catch (e) {
     console.log(e)
 }
-console.log(del)
-
+//console.log(del);
+let a;
+try {
+    a = await users.getUserById(userFive._id);
+} catch (e) {
+    console.log(e);
+}
+//console.log(a); // no comment for announcement
+try {
+    a = await announcements.updateAnnouncement(a.announcements[0]._id.toString(), "Hey everyone!");
+} catch (e) {
+    console.log(e);
+}
+//console.log(a); // comment for announcement
 
 console.log()
 

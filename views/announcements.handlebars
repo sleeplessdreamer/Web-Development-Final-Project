@@ -1,5 +1,6 @@
 <div class="announcements-view">
   <h1>{{pageTitle}}</h1>
+  {{#if announcements.length}}
   <ul class="announcements-list">
     {{#each announcements}}
     <li class="announcement-post">
@@ -11,4 +12,7 @@
     </li>
     {{/each}}
   </ul>
+  {{else}}
+  <p>No Announcements Yet!</p>
+  {{/if}}
 </div>

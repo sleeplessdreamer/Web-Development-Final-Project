@@ -1,0 +1,22 @@
+<div class="form">
+    <h1>{{pageTitle}}</h1>
+    <div class="deleteList">
+        <form action="/groceryLists/delete/{{listId}}" method="POST" class="deleteList-form" id="deleteList">
+            <input type="hidden" id="listId" value="{{listId}}">
+            <p>Are You Sure You Want To Delete This List?</p>
+            <input type="submit" value="Delete List">
+            <a href="/users/profile">Cancel</a>
+        </form>
+        <script src = "/public/js/deleteList.js"></script>
+    </div>
+    <div id="error"></div>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>

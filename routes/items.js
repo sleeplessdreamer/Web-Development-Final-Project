@@ -76,10 +76,11 @@ router.route('/createItem')
       return res.redirect(`/items/createItem?listId=${listId}`);
     } catch (error) {
       // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
+      res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
     }
   });
 
+<<<<<<< HEAD
 router.route('/updateQuantity')
   .post(async (req, res) => {
     const user = req.session.user;
@@ -98,5 +99,102 @@ router.route('/updateQuantity')
     }
   });
 
+=======
+  router.route('/editItem/:id')
+    .get(async (req, res) => {
+    const user = req.session.user;
+    const listId = req.query.listId;
+    const itemId = req.params.id;
+    //console.log(listId);
+    const successMessage = req.session.successMessage;
+    delete req.session.successMessage;
+
+    let oldData; 
+      try{
+        oldData = await groceryItemsData.getItemById(listId, itemId);
+      } catch (e){
+        console.log(e);
+      }
+      //console.log(oldData);
+
+    res.status(200).render('items/edit', {
+      pageTitle: 'Edit Item',
+      user,
+      authenticated: true,
+      household: true,
+      listId: listId,
+      itemId: itemId,
+      oldData: oldData,
+      successMessage: successMessage
+    });
+    })
+    .post(async (req, res) => {
+      // get List Id
+      const listId = req.query.listId; 
+      console.log(listId);
+      const itemId = req.params.id;
+      const newInput = req.body; 
+      //console.log(newInput);
+      let nlistId = xss(newInput.listId);
+      let itemName = xss(newInput.itemName);
+      let quantity = parseInt(newInput.quantity)
+      let priority = xss(newInput.priority);
+      let category = xss(newInput.category);
+      let comments = xss(newInput.comments);
+      let errors = []; 
+
+      try {
+        itemName = checkString(itemName, "Item Name")
+      } catch (e) {
+        errors.push(e);
+      }
+      try {
+        quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
+      } catch (e) {
+        errors.push(e);
+      }
+      try {
+        priority = checkString(priority, "Priority");
+        if (priority.toLowerCase() !== "low")
+          if (priority.toLowerCase() !== 'medium')
+            if (priority.toLowerCase() !== 'high')
+              throw `Error: invalid priority ranking`;
+      } catch (e) {
+        errors.push(e);
+      }
+      try {
+        category = checkString(category, 'Category');
+      } catch (e) {
+        errors.push(e);
+      }
+      if (errors.length > 0) {
+        res.status(400).render('items/edit', {
+          pageTitle: "Edit Item",
+          errors: errors,
+          hasErrors: true,
+          oldData: newInput,
+          listId: listId,
+          authenticated: true,
+          household: true
+        });
+        return;
+      }
+
+      newInput.quantity = Number(newInput.quantity);
+      newInput.comments = [newInput.comments];
+
+      
+      // now update
+      try{
+        let result = await groceryItemsData.updateItem(itemId, newInput);
+        if (!result) throw `Error: could not update item`;
+        return res.redirect(`/groceryLists/${listId}`);
+      } catch(e){
+        res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
+      }
+    
+    }
+);
+>>>>>>> 83d39c7ef3bd9cf32d60cda3670fc179322174fc
 
 export default router;

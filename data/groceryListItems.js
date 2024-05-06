@@ -78,6 +78,23 @@ const exportedMethods = {
     return targetList.items;
   },
 
+  async getItemById(targetListID, itemId){
+    if (!targetListID) throw `You must provide an list id`;
+    if (!ObjectId.isValid(targetListID)) throw `invalid list Id`;
+    console.log(targetListID);
+    console.log(itemId);
+
+    const groceryListList = await groceryLists();
+    const foundItem = await groceryListList.findOne(
+      { 'items._id': new ObjectId(itemId) }
+    );
+    if (!foundItem) {
+      throw `Item not found`;
+    }
+    return foundItem.items[0];
+  },
+
+
   async getItem(targetListID, itemName) {// searching for items by name within a list
     if (!targetListID) throw `You must provide an list id`;
     if (!ObjectId.isValid(targetListID)) throw `invalid list Id`;

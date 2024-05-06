@@ -1,4 +1,4 @@
-import { users, groceryLists, household } from "../config/mongoCollections.js";
+import { users, groceryLists, household, announcements } from "../config/mongoCollections.js";
 import { checkHouseholdName, checkId, checkString } from '../validation.js';
 import userData from './users.js'
 import { ObjectId } from 'mongodb';
@@ -74,6 +74,7 @@ const exportedMethods = {
       { $push: { groceryLists: newList._id.toString() } }, // push ID of list to household
       { returnDocument: 'after' }
     );
+    await this.createListAnnouncement(newList._id.toString(), userId); // make announcement
     return newList;
   },
 
@@ -97,9 +98,10 @@ const exportedMethods = {
     return gList;
   },
 
-  async deleteGroceryList(id, householdName) {
+  async deleteGroceryList(id, householdName, userId) {
     id = checkId(id, "Grocery List Id");
     householdName = checkHouseholdName(householdName, "Household Name");
+    userId = checkId(userId, "User Id");
 
     let groceryList = await this.getGroceryList(id);
     const userMember = await userData.getUserById(groceryList.userId);
@@ -124,6 +126,7 @@ const exportedMethods = {
     );
     if (!updatedInfo) throw 'Error: Could not update user successfully';
 
+    await this.deleteListAnnouncement(id, userId);
     const groceryListCollection = await groceryLists();
     const deleteInfo = await groceryListCollection.findOneAndDelete({ _id: new ObjectId(id) });
     if (!deleteInfo) {
@@ -142,8 +145,7 @@ const exportedMethods = {
     //    if (!userId || !groceryName || !listType) {
     //      throw 'Must provide all fields to update Grocery List';
     //    }
-
-    listId  = checkId(listId , "Grocery List Id");
+    listId = checkId(listId, "Grocery List Id");
     groceryName = checkString(groceryName, "Grocery List Name");
     let currentList = await this.getGroceryList(listId);
 
@@ -178,6 +180,113 @@ const exportedMethods = {
     if (!gList) throw 'Error: Could not update list'
 
     return updateGroceryList;
+  },
+  async createListAnnouncement(groceryListId, userId) {
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+    userId = checkId(userId, "User Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await this.getGroceryList(groceryListId);
+    if (!groceryList) throw  `Grocery list could not be found`;
+
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " created a list called '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='createList';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList,
+      groceryItem,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+
+    return insertInfo;
+  },
+  async deleteListAnnouncement(groceryListId, userId) {
+    groceryListId = checkId(groceryListId, "Grocery List Id");
+    userId = checkId(userId, "User Id");
+
+    // Get name of user who is joining household
+    const userMember = await userData.getUserById(userId);
+    if (!userMember) throw `User could not be found`;
+
+    const groceryList = await this.getGroceryList(groceryListId);
+    if (!groceryList) throw  `Grocery list could not be found`;
+
+    // Make New Announcement
+    const announcement = userMember.firstName + " " + userMember.lastName + " deleted a list called '" + groceryList.groceryName + "'!";
+    let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='deleteList';
+    let day = currentDate.getUTCDate();
+    let month = currentDate.getUTCMonth() + 1;
+    const year = currentDate.getUTCFullYear();
+    if (month.toString().length === 1) {
+      month = "0" + month;
+    }
+    if (day.toString().length === 1) {
+      day = "0" + day;
+    }
+    currentDate = month + "/" + day + "/" + year;
+
+    const newAnnouncement = {
+      action, // might get rid of this 
+      groceryList,
+      groceryItem,
+      comment,
+      userId,
+      householdName,
+      announcement, // added this for text to store in database
+      currentDate
+    }
+    // Insert New Announcement
+    const announcementCollection = await announcements();
+    const insertInfo = await announcementCollection.insertOne(newAnnouncement);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) throw 'Error: Could not add announcement';
+
+    // Update user information with new announcement
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $push: { announcements: newAnnouncement } },
+      { returnDocument: "after" }
+    );
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
+    }
+    updatedInfo._id = updatedInfo._id.toString();
+    return insertInfo;
   }
 
 };

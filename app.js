@@ -292,8 +292,36 @@ app.use('/items', async (req, res, next) => {
   }
 });
 
-/** Only checks if user is authenticated for access and has householdName */
 app.use('/groceryLists', async (req, res, next) => {
+  const authenticated = req.session.user;
+  if (req.path === '/') {
+    if (!authenticated) {
+      return res.redirect('/users/login');
+    } else if (authenticated && authenticated.householdName.length !== 0) {
+      return res.redirect('/household/info');
+    } else if (authenticated && authenticated.householdName.length === 0) {
+      return res.redirect('/household/new');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+app.use('/groceryLists/edit', async (req, res, next) => {
+  const authenticated = req.session.user;
+  if (!authenticated) {
+    return res.redirect('/users/login');
+  }
+  else if (authenticated && authenticated.householdName.length === 0) {
+    return res.redirect('/household/new');
+  } else {
+    next();
+  }
+});
+
+app.use('/groceryLists/delete', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
     return res.redirect('/users/login');

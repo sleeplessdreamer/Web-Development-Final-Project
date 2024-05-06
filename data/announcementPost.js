@@ -1,16 +1,20 @@
-import {announcements} from '../config/mongoCollections.js'; // import collection
-import {ObjectId} from 'mongodb';
-import {checkId, checkString} from '../validation.js'
+import { announcements, users } from '../config/mongoCollections.js'; // import collection
+import { ObjectId } from 'mongodb';
+import { checkId, checkString } from '../validation.js'
 
 const exportedMethods = {
-  async newAnnouncement (
+  async newAnnouncement(
     action,
     comment,
     userId,
     householdName
   ) {
     action = checkString(action, 'Action');
-    comment = checkString(comment, 'Comment');
+    if (comment.length === 0) {
+      comment = "";
+    } else {
+      comment = checkString(comment, 'Comment');
+    }
     userId = checkId(userId, 'User ID');
     householdName = checkString(householdName, 'Household Name');
     const announcementCollection = await announcements();
@@ -22,41 +26,43 @@ const exportedMethods = {
 
     const newAnnouncement = {
       action: action,
+      groceryList: groceryList,
+      groceryItem: groceryItem,
       comment: comment,
       userId: new ObjectId(userId),
       householdName: householdName,
+      //announcement: announcement,
       currentDate: date
     };
     const insertInfo = await announcementCollection.insertOne(newAnnouncement);
 
-    if(insertInfo.insertedCount === 0){
+    if (insertInfo.insertedCount === 0) {
       throw `Could not add announcement`;
     }
-    else{
-      return {inserted: true};
+    else {
+      return { inserted: true };
     }
   },
 
   async deleteOldAnnouncement(id) {
     id = checkId(id, 'ID');
     const announcementCollection = await announcements();
-    const deleteAnnouncement = await announcementCollection.deleteOne({_id: ObjectId(id)});
-    if (deleteAnnouncement.deletedCount === 0){
+    const deleteAnnouncement = await announcementCollection.deleteOne({ _id: ObjectId(id) });
+    if (deleteAnnouncement.deletedCount === 0) {
       throw `Could not delete announcement with id of ${id}`;
     }
-    else{
-      return {deleted: true};
+    else {
+      return { deleted: true };
     }
-    return;
   },
   // because if there are different households should only see announcements from your household
   async getAllAnnouncementsByHouseholdName(householdName) {
     householdName = checkString(householdName);
     const announcementCollection = await announcements();
     let announcementList = await announcementCollection
-    .find({householdName: householdName})
-    .project({ _id: 0, announcement: 1, comment: 1, currentDate: 1 })   // just return needed fields
-    .toArray();
+      .find({ householdName: householdName })
+      .project({ _id: 0, announcement: 1, comment: 1, currentDate: 1 })   // just return needed fields
+      .toArray();
     if (!announcementList) throw `Could not get all Announcements`
     announcementList.reverse(); // most recent announcements on top
     return announcementList; // return list of announcements
@@ -65,14 +71,15 @@ const exportedMethods = {
   async deleteComment(id) {
     id = checkId(id, 'ID');
     const announcementCollection = await announcements();
-    const deleteComment = await announcementCollection.deleteOne({_id: ObjectId(id)});
-    if (deleteComment.deletedCount === 0){
+    const deleteComment = await announcementCollection.deleteOne({ _id: ObjectId(id) });
+    if (deleteComment.deletedCount === 0) {
       throw `Could not delete comment with id of ${id}`;
     }
-    else{
-      return {updated: true};
+    else {
+      return { updated: true };
     }
   },
+<<<<<<< HEAD
   
   async updateAnnouncement( // -- users add comments to announcements
     id,
@@ -89,28 +96,53 @@ const exportedMethods = {
     groceryList = checkString(groceryList, 'Grocery List');
     comment = checkString(comment, 'Comment');
     userId = checkId(userId, 'User ID');
+=======
+
+  async getAnnouncementById(id) {
+    id = checkId(id, "Announcement Id");
+>>>>>>> 83d39c7ef3bd9cf32d60cda3670fc179322174fc
     const announcementCollection = await announcements();
-    const updatedAnnouncement = await announcementCollection.updateOne(
-      {
-        _id: ObjectId(id)
-      },
-      {
-        $set: { // UNSURE OF THIS SECTION OF CODE
-          action: action,
-          groceryItem: groceryItem,
-          groceryList: groceryList,
-          comment: comment,
-          userId: new ObjectId(userId)
-        } // UP TO HERE
-      }
+    const announcementPost = await announcementCollection.findOne({ _id: new ObjectId(id) });
+    if (!announcementPost) {
+      throw 'Error: Announcement not found.'
+    }
+    return announcementPost;
+  },
+
+  async updateAnnouncement(id, comment) {
+    id = checkId(id, "Announcement Id");
+    comment = checkString(comment, "comment");
+    const currentAnnouncement = await this.getAnnouncementById(id);
+    if (!currentAnnouncement) throw `Error: Cound not find announcement`;
+
+    const updateAnnouncement = {
+      _id: currentAnnouncement._id,
+      action: currentAnnouncement.action, // might get rid of this 
+      groceryList: currentAnnouncement.groceryList,
+      groceryItem: currentAnnouncement.groceryItem,
+      comment: comment,
+      userId: currentAnnouncement.userId,
+      householdName: currentAnnouncement.householdName,
+      announcement: currentAnnouncement.announcement,// added this for text to store in database
+      currentDate: currentAnnouncement.currentDate
+    }
+
+    const announcementCollection = await announcements();
+    const announcementPost = await announcementCollection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: updateAnnouncement }, { returnDocument: 'after' });
+    if (!announcementPost) throw 'Error: Could not update announcement'
+    
+    // Get user and update 
+    const userCollection = await users();
+    let updatedInfo = await userCollection.findOneAndUpdate(
+      { 'announcements._id': new ObjectId(id) },
+      { $set: { 'announcements.$': updateAnnouncement } },
+      { returnDocument: 'after' }
     );
-    if(!updatedAnnouncement.modifiedCount){
-      throw `Could not update announcement with id of ${id}`;
+    // if user cannot be updated method should throw
+    if (!updatedInfo) {
+      throw 'Error: Could not update user successfully';
     }
-    else{
-      return {updated: true};
-    }
-    }
-  };
-  export default exportedMethods;
-  
+    return updateAnnouncement;
+  }
+};
+export default exportedMethods;

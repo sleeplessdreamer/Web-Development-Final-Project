@@ -1,12 +1,26 @@
 <div class = "single-list-view">
     <h1>{{groceryList.groceryName}}</h1>
     <p>List Type: {{groceryList.listType}}</p>
-    <ul>
+    <ul class ="list-items">
         {{#each groceryList.items}}
+<<<<<<< HEAD
         <li>{{itemName}} - Quantity: {{quantity}} - Priority: {{priority}} - Category: {{category}} - Comments: {{comments}}</li>
         <button onclick = "updateQuantity('{{this._id}}', 1)"> +1 Quantity  </button>
         <button onclick = "updateQuantity('{{this._id}}', -1)"> -1 Quantity  </button>
         {{/each}}
+=======
+        <li>
+            <div class ='itemname'>{{itemName}}</div>
+            <div class="item-info">
+                Quantity: {{quantity}} | Priority: {{priority}} | Category: {{category}} | Comments: {{comments}} 
+            </div> 
+            <div class = "links">
+                <a href="/items/editItem/{{_id}}?listId={{../groceryList._id}}" class="edit-link">Edit</a>
+                <a href="/items/createItem?listId={{../groceryList._id}}" class="delete-link">Delete</a>
+            </div>      
+            {{/each}}
+        </li>
+>>>>>>> 83d39c7ef3bd9cf32d60cda3670fc179322174fc
     </ul>
 
     <a href="/items/createItem?listId={{listId}}">Add New Item</a>

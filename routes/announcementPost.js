@@ -61,7 +61,7 @@ router.route('/')
       comment: checkString(comment),
       userId: user._id
     };  // UP TO HERE
-    const announcementCreated = await announcementData.createAnnouncement(newAnnouncement);
+    const announcementCreated = await announcementData.newAnnouncement(newAnnouncement);
     if (!announcementCreated) {
         res.status(400).render('error', {
           pageTitle: "Error",

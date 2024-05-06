@@ -1,0 +1,27 @@
+<div class="form">
+    <h1>{{pageTitle}}</h1>
+    <div class="newList">
+        <form action="/groceryLists/edit/{{listId}}" method="POST" class="editList-form" id="editList">
+            <label for="groceryName">Grocery List Name:</label><br>
+            <input type="text" id="groceryName" name="groceryName" value="{{groceryList.groceryName}}"><br>
+            <label for="listType">List Type:</label><br>
+            <select id="listType" name="listType">
+                <option value="community">Community</option>
+                <option value="special occasion">Special Occasion</option>
+                <option value="personal">Personal</option>
+            </select><br>
+            <input type="submit" value="Edit List">
+        </form>
+        <script src = "/public/js/editList.js"></script>
+    </div>
+    <div id="error"></div>
+    {{#if hasErrors}}
+    <ul class="error-list">
+        {{#each errors}}
+        <li>
+            {{this}}
+        </li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>

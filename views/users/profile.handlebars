@@ -48,20 +48,45 @@
     {{/each}}
 </ul>
 <h3>My Comments</h3>
+{{#if user.comments.length}}
 <ul class="comments-list">
-    {{#each comments}}
+    {{#each user.comments}}
     <li class="comments">
         {{this}}
     </li>
     {{/each}}
 </ul>
+{{else}}
+<p>No Comments Yet!</p>
+{{/if}}
+
 <h3>My Announcements</h3>
+{{#if user.announcements.length}}
 <ul class="announcements-list">
-    {{#each announcements}}
+    {{#each user.announcements}}
     <li class="announcements-post">
-        {{this.announcement}}<br>
-        {{this.comment}}<br>
-        <i>{{this.currentDate}}</i>
+        <ul>
+            <li>{{this.announcement}}</li>
+            {{#if this.comment.length}}
+            <li>{{this.comment}}</li>
+            {{else}}
+            <!-- Only show the form if there are no comments -->
+            <form method="POST" id="announcement-form">
+                <label for="comment">
+                    <textarea name="comment" placeholder="Leave A Comment" id="comment"
+                        value="{{this.comment}}"></textarea><br>
+                </label>
+                <input type="hidden" id="announcementId" name="announcementId" value="{{this._id}}">
+                <button type="submit">Submit</button>
+            </form>
+            <div id="error-output"></div>
+            <script src="../public/js/announcements.js"></script>
+            {{/if}}
+            <i>{{this.currentDate}}</i>
+        </ul>
     </li>
     {{/each}}
 </ul>
+{{else}}
+<p>No Announcements Yet!</p>
+{{/if}}
