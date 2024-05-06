@@ -80,7 +80,6 @@ router.route('/createItem')
     }
   });
 
-<<<<<<< HEAD
 router.route('/updateQuantity')
   .post(async (req, res) => {
     const user = req.session.user;
@@ -99,7 +98,6 @@ router.route('/updateQuantity')
     }
   });
 
-=======
   router.route('/editItem/:id')
     .get(async (req, res) => {
     const user = req.session.user;
@@ -195,6 +193,5 @@ router.route('/updateQuantity')
     
     }
 );
->>>>>>> 83d39c7ef3bd9cf32d60cda3670fc179322174fc
 
 export default router;
