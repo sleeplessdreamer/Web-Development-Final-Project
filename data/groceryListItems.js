@@ -156,9 +156,62 @@ const exportedMethods = {
       { $set: { 'items.$': updatedItem } },
       { returnDocument: 'after' }
     );
-    if (!updateInfo) throw `Update failed, could not find item with id ${itemId}`;
+    if (!updateInfo){
+      throw `Update failed, could not find item with id ${itemId}`;
+    }
+    else{
+      return updateInfo;
+    }
+  },
 
-    return updateInfo;
+  async updateQuantity(itemId, incQuantity) {
+    if(!itemId){
+      throw `You must provide an item ID`;
+    }
+    else{
+      const checkID = checkId(itemId, 'Item ID');
+      if(checkID === undefined){
+        throw `You must provide an item ID`;
+      }
+    }
+
+    if(!incQuantity){
+      throw `You must provide a quantity`;
+    }
+    else{
+      const checkQuant = checkAge(incQuantity, 'Quantity');
+      if(checkQuant === undefined){
+        throw `You must provide a quantity`;
+      }
+    }
+
+    const groceryListt = await groceryLists();
+    const item = groceryListt.items.find(item => item._id === itemId);
+
+    if(!item){
+      throw `Could not find item with id of ${itemId}`;
+    }
+
+    const finalQuant = item.quantity + incQuantity;
+    if(incQuantity === -1 && item.quantity === 1){
+      this.deleteLItem(itemId);
+    }
+    if(finalQuant < 0){
+      throw `Quantity cannot be less than 0`;
+    }
+
+    const updatedItem = await groceryListt.updateOne(
+      { 'items._id': new ObjectId(itemId) },
+      { $set: { 'items.$.quantity': finalQuant } },
+      { returnDocument: 'after' }
+    );
+
+    if(updatedItem.modifiedCount === 0){
+      throw `Could not update quantity for item with id of ${itemId}`;
+    }
+    else{
+      return { updated: true };
+    }
   }
 };
 export default exportedMethods;

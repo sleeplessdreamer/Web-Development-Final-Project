@@ -74,7 +74,7 @@ const exportedMethods = {
     }
   },
   
-  async updateAnnouncement(
+  async updateAnnouncement( // -- users add comments to announcements
     id,
     action,
     groceryItem,

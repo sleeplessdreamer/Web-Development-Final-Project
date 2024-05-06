@@ -80,4 +80,23 @@ router.route('/createItem')
     }
   });
 
+router.route('/updateQuantity')
+  .post(async (req, res) => {
+    const user = req.session.user;
+    const { quantity, itemId } = req.body;
+    try {
+      const updatedItem = await groceryItemsData.updateQuantity(itemId, quantity);
+      if (!updatedItem){
+        throw `Error: could not update quantity`;
+      }
+      else{
+        return res.redirect('/lists');
+      }
+    } catch (error) {
+      // Handle errors appropriately, for example, render an error page
+      res.status(500).render('error', { error: error });
+    }
+  });
+
+
 export default router;
