@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 import { householdData, userData, groceryListData } from '../data/index.js';
-import { checkHouseholdName } from '../validation.js';
+import { checkHouseholdName, checkString } from '../validation.js';
 import xss from 'xss';
 
 router.get('/', async (req, res) => {
@@ -170,9 +170,7 @@ router.route('/searchLists')
     try {
       const searchQuery = itemName.trim().toLowerCase()
 
-      if (searchQuery === ""){
-        throw `Search Query cannot be empty`;
-      }
+      searchcheckString(searchQuery);
   
       const allLists = await groceryListData.getAllGroceryLists();
   
@@ -184,7 +182,7 @@ router.route('/searchLists')
       res.render('household/searchResults', { pageTitle: 'Search Results', matchingLists, searchQuery, user, authenticated: true,
       household: true });
     } catch (error) {
-      res.render('error', { pageTitle: 'Error', errors: error });
+      return res.redirect('/household/info');
     }
   });
 
