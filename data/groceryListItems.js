@@ -16,17 +16,18 @@ const exportedMethods = {
       throw `All arguments must be passed`;
     }
 
-    checkString(itemName, "Item Name");
-    itemName = itemName.trim();
-    checkAge(quantity, 'Quantity'); //Just a check is whole number function
-    checkString(priority, "Priority");
-    priority = priority.trim();
+    itemName = checkString(itemName, "Item Name");
+    quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
+    priority = checkString(priority, "Priority");
     if (priority.toLowerCase() !== "low")
       if (priority.toLowerCase() !== 'medium')
         if (priority.toLowerCase() !== 'high')
           throw `Error: invalid priority ranking`;
-    checkString(category);
-    category = category.trim();
+    itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
+    priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
+    category = checkString(category);
+    category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
+
     // if no comment supplied just make it an empty field don't get rid of the field
     if (!comments) {
       comments = [];
@@ -72,23 +73,30 @@ const exportedMethods = {
   async getAllItems(groceryListId) {
     if (!groceryListId){
       throw `You must provide an list id`;
-    } 
-
+    }
     if (!ObjectId.isValid(groceryListId)){
       throw `invalid list ID`;
     }
 
     let targetList = await groceryListData.getGroceryList(groceryListId);
+
     let sortedList = [];
     const priorities = ['low', 'medium', 'high'];
-    for (let i = 0; i < priorities.length; i++) {
-      let priority = priorities[ priorities.length - i - 1];
-      let tempItemList = targetList.items.filter(item => item.priority === priority);
-      sortedList = sortedList.concat(tempItemList);
-    }
-    if( sortedList.length === 0){
-      throw `No items found in list with id ${groceryListId}`;
-    }
+    targetList.items.forEach((item) => {
+      if (item.priority.toLowerCase() === 'high') {
+        sortedList.push(item);
+      }
+    })
+    targetList.items.forEach((item) => {
+      if (item.priority.toLowerCase() === 'medium') {
+        sortedList.push(item);
+      }
+    })
+    targetList.items.forEach((item) => {
+      if (item.priority.toLowerCase() === 'low') {
+        sortedList.push(item);
+      }
+    })
     return sortedList;
   },
 
@@ -129,9 +137,8 @@ const exportedMethods = {
 
   async deleteLItem(listId, itemId) {
     if (!listId) throw `You must provide an list ID`;
-    if (!itemId) throw `You must provide an item ID`;
-    if (!ObjectId.isValid(itemId)) throw `invalid item ID`;
     if (!ObjectId.isValid(listId)) throw `invalid list ID`;
+    
     const listCollection = await groceryLists();
     const list = await listCollection.findOne({ 'items._id': new ObjectId(itemId) });
     const deletionInfo = await listCollection.updateOne(

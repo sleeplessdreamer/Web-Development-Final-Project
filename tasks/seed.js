@@ -227,11 +227,34 @@ try {//testing to see if creating a new item with the same name will update the 
     console.log(e);
 }
 try {
+    await items.newItem(
+        listOne._id.toString(),
+        "Apples",
+        2,
+        "Low",
+        "produce"
+    );
+    //console.log(dupeItem); // test if it adds to item that already exists in list
+} catch (e) {
+    console.log(e);
+}
+try {
+    await items.newItem(
+        listOne._id.toString(),
+        "Oranges",
+        5,
+        "High",
+        "produce"
+    );
+    //console.log(dupeItem); // test if it adds to item that already exists in list
+} catch (e) {
+    console.log(e);
+}
+try {
     await items.getAllItems(listOne._id.toString());
 } catch (e) {
     console.log(e);
 }
-
 let itemOne;
 try {
     itemOne = await items.getItem(newitem._id.toString(), "Bananas");
@@ -253,9 +276,7 @@ try {
     console.log(e);
 }
 //console.log(update);
-
 let deleteitem;
-//console.log(itemOne._id)
 try {
     deleteitem = await items.deleteLItem(itemOne._id);
     //console.log(deleteitem);
@@ -297,7 +318,6 @@ try {
 } catch (e) {
     console.log(e)
 }
-
 // user has to belong to household to make grocery lists for it will throw
 try {
     await lists.newGroceryList(
@@ -326,7 +346,6 @@ try {
 } catch (e) {
     console.log(e);
 }
-
 let newList = undefined;
 try {
     newList = await lists.newGroceryList(

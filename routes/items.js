@@ -56,6 +56,13 @@ router.route('/createItem')
     } catch (e) {
       errors.push(e);
     }
+    if (comments) {
+      try {
+        comments = checkString(comments, 'Comment');
+      } catch (e) {
+        errors.push(e);
+      }
+    }
     // If any errors then display them
     if (errors.length > 0) {
       res.status(400).render('items/new', {
@@ -69,6 +76,10 @@ router.route('/createItem')
       });
       return;
     }
+    itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
+    priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
+    category = checkString(category);
+    category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
     try {
       // Call the method to create a new grocery list item
       let newItemInfo = await groceryItemsData.newItem(listId, itemName, quantity, priority, category, comments);
@@ -86,10 +97,10 @@ router.route('/updateQuantity')
     const { quantity, itemId } = req.body;
     try {
       const updatedItem = await groceryItemsData.updateQuantity(itemId, quantity);
-      if (!updatedItem){
+      if (!updatedItem) {
         throw `Error: could not update quantity`;
       }
-      else{
+      else {
         return res.redirect('/lists');
       }
     } catch (error) {
@@ -98,8 +109,8 @@ router.route('/updateQuantity')
     }
   });
 
-  router.route('/editItem/:id')
-    .get(async (req, res) => {
+router.route('/editItem/:id')
+  .get(async (req, res) => {
     const user = req.session.user;
     const listId = req.query.listId;
     const itemId = req.params.id;
@@ -107,13 +118,13 @@ router.route('/updateQuantity')
     const successMessage = req.session.successMessage;
     delete req.session.successMessage;
 
-    let oldData; 
-      try{
-        oldData = await groceryItemsData.getItemById(listId, itemId);
-      } catch (e){
-        console.log(e);
-      }
-      //console.log(oldData);
+    let oldData;
+    try {
+      oldData = await groceryItemsData.getItemById(listId, itemId);
+    } catch (e) {
+      console.log(e);
+    }
+    //console.log(oldData);
 
     res.status(200).render('items/edit', {
       pageTitle: 'Edit Item',
@@ -125,74 +136,85 @@ router.route('/updateQuantity')
       oldData: oldData,
       successMessage: successMessage
     });
-    })
-    .post(async (req, res) => {
-      // get List Id
-      const listId = req.query.listId; 
-      console.log(listId);
-      const itemId = req.params.id;
-      const newInput = req.body; 
-      //console.log(newInput);
-      let nlistId = xss(newInput.listId);
-      let itemName = xss(newInput.itemName);
-      let quantity = parseInt(newInput.quantity)
-      let priority = xss(newInput.priority);
-      let category = xss(newInput.category);
-      let comments = xss(newInput.comments);
-      let errors = []; 
-
-      try {
-        itemName = checkString(itemName, "Item Name")
-      } catch (e) {
-        errors.push(e);
-      }
-      try {
-        quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
-      } catch (e) {
-        errors.push(e);
-      }
-      try {
-        priority = checkString(priority, "Priority");
-        if (priority.toLowerCase() !== "low")
-          if (priority.toLowerCase() !== 'medium')
-            if (priority.toLowerCase() !== 'high')
-              throw `Error: invalid priority ranking`;
-      } catch (e) {
-        errors.push(e);
-      }
-      try {
-        category = checkString(category, 'Category');
-      } catch (e) {
-        errors.push(e);
-      }
-      if (errors.length > 0) {
-        res.status(400).render('items/edit', {
-          pageTitle: "Edit Item",
-          errors: errors,
-          hasErrors: true,
-          oldData: newInput,
-          listId: listId,
-          authenticated: true,
-          household: true
-        });
-        return;
-      }
-
-      newInput.quantity = Number(newInput.quantity);
-      newInput.comments = [newInput.comments];
-
-      
-      // now update
-      try{
-        let result = await groceryItemsData.updateItem(itemId, newInput);
-        if (!result) throw `Error: could not update item`;
-        return res.redirect(`/groceryLists/${listId}`);
-      } catch(e){
-        res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
-      }
-    
+  })
+  .post(async (req, res) => {
+    // get List Id
+    const listId = req.query.listId;
+    console.log(listId);
+    const itemId = req.params.id;
+    const newInput = req.body;
+    //console.log(newInput);
+    let nlistId = xss(newInput.listId);
+    let itemName = xss(newInput.itemName);
+    let quantity = parseInt(newInput.quantity)
+    let priority = xss(newInput.priority);
+    let category = xss(newInput.category);
+    let comments = xss(newInput.comments);
+    let errors = [];
+    try {
+      nlistId = checkId(nlistId, "List Id")
+    } catch (e) {
+      errors.push(e);
     }
-);
+    try {
+      itemName = checkString(itemName, "Item Name")
+    } catch (e) {
+      errors.push(e);
+    }
+    try {
+      quantity = checkAge(quantity, 'Quantity'); //Just a check is whole number function
+    } catch (e) {
+      errors.push(e);
+    }
+    try {
+      priority = checkString(priority, "Priority");
+      if (priority.toLowerCase() !== "low")
+        if (priority.toLowerCase() !== 'medium')
+          if (priority.toLowerCase() !== 'high')
+            throw `Error: invalid priority ranking`;
+    } catch (e) {
+      errors.push(e);
+    }
+    try {
+      category = checkString(category, 'Category');
+    } catch (e) {
+      errors.push(e);
+    }
+    if (comments) {
+      try {
+        comments = checkString(comments, 'Comment');
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+    if (errors.length > 0) {
+      res.status(400).render('items/edit', {
+        pageTitle: "Edit Item",
+        errors: errors,
+        hasErrors: true,
+        oldData: newInput,
+        listId: listId,
+        authenticated: true,
+        household: true
+      });
+      return;
+    }
+    itemName = itemName.slice(0, 1).toUpperCase() + itemName.slice(1).toLowerCase();  // store everything the same
+    priority = priority.slice(0, 1).toUpperCase() + priority.slice(1).toLowerCase();  // store everything the same
+    category = checkString(category);
+    category = category.slice(0, 1).toUpperCase() + category.slice(1).toLowerCase();  // store everything the same
+    newInput.quantity = Number(newInput.quantity);
+    newInput.comments = [newInput.comments];
+    // now update
+    try {
+      let result = await groceryItemsData.updateItem(itemId, newInput);
+      if (!result) throw `Error: could not update item`;
+      return res.redirect(`/groceryLists/${listId}`);
+    } catch (e) {
+      res.status(500).render('error', { pageTitle: 'Error', errors: e, authenticated: true, household: true });
+    }
+  }
+  );
 
 router.route('/deleteItem/:id')
   .get(async (req, res) => {
@@ -215,18 +237,18 @@ router.route('/deleteItem/:id')
     });
 
   })
-  .post(async (req, res) =>{
-    const listId = req.query.listId; 
+  .post(async (req, res) => {
+    const listId = req.query.listId;
     console.log(listId);
     const itemId = req.params.id;
     console.log(itemId);
-    let deleteItem; 
+    let deleteItem;
     try {
       deleteItem = await groceryItemsData.deleteLItem(listId, itemId);
       if (deleteItem.groceryItemDeleted === false) throw 'Error: Could not delete item.'
       return res.redirect(`/groceryLists/${listId}`);
-    } catch (e){
-      console.log(e); 
+    } catch (e) {
+      console.log(e);
     }
   });
 

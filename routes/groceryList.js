@@ -12,7 +12,8 @@ router.route('/new')//hasn't been tested
         pageTitle: 'New Grocery List',
         user,
         authenticated: true,
-        household: true
+        household: true,
+        hasErrors: true
       });
     } catch (e) {
       console.error('Error displaying new grocery list form:', e);
@@ -57,7 +58,7 @@ router.route('/new')//hasn't been tested
       // Call the method to create a new grocery list item
       let newListInfo = await groceryListData.newGroceryList(userId, householdName, groceryName, listType);
       if (!newListInfo) throw `Error could not create new list`;
-      return res.redirect('/household/info');
+      return res.redirect(`/items/createItem?listId=${newListInfo._id}`);
     } catch (error) {
       // Handle errors appropriately, for example, render an error page
       res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
