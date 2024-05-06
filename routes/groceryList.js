@@ -276,7 +276,7 @@ router.route('/delete/:id')
       return;
     }
     try {
-      let del = await groceryListData.deleteGroceryList(listId, user.householdName);
+      let del = await groceryListData.deleteGroceryList(listId, user.householdName, user.userId);
       if (!del) throw `Error: Could not delete grocery list`;
       return res.status(200).redirect('/users/profile');
     } catch (e) {

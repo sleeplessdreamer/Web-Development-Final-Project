@@ -349,7 +349,7 @@ try {
 }
 let del = undefined;
 try {
-    del = await lists.deleteGroceryList(newList._id.toString(), "GirlBosses");
+    del = await lists.deleteGroceryList(newList._id.toString(), "GirlBosses", userThree._id.toString());
 } catch (e) {
     console.log(e)
 }
