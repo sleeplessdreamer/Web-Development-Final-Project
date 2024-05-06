@@ -70,12 +70,26 @@ const exportedMethods = {
   },
 
   async getAllItems(groceryListId) {
-    if (!groceryListId) throw `You must provide an list id`;
+    if (!groceryListId){
+      throw `You must provide an list id`;
+    } 
 
-    if (!ObjectId.isValid(groceryListId)) throw `invalid list ID`; //ensuring that the list exists
+    if (!ObjectId.isValid(groceryListId)){
+      throw `invalid list ID`;
+    }
 
     let targetList = await groceryListData.getGroceryList(groceryListId);
-    return targetList.items;
+    let sortedList = [];
+    const priorities = ['low', 'medium', 'high'];
+    for (let i = 0; i < priorities.length; i++) {
+      let priority = priorities[ priorities.length - i - 1];
+      let tempItemList = targetList.items.filter(item => item.priority === priority);
+      sortedList = sortedList.concat(tempItemList);
+    }
+    if( sortedList.length === 0){
+      throw `No items found in list with id ${groceryListId}`;
+    }
+    return sortedList;
   },
 
   async getItemById(targetListID, itemId){
