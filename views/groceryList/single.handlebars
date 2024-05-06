@@ -6,7 +6,23 @@
         <li>
             <div class ='itemname'>{{itemName}}</div>
             <div class="item-info">
-                Quantity: {{quantity}} | Priority: {{priority}} | Category: {{category}} | Comments: {{comments}} 
+                Quantity: {{quantity}} | Priority: {{priority}} | Category: {{category}} 
+                <br>
+                <form method="POST" id="comment-form">
+                    {{#if comments.length}}
+                    {{#each comments}}
+                <li>{{comments}} <br>
+                    <p class = "commenter">{{../../name}}</p>
+                </li>
+                    {{/each}}
+                    {{/if}}
+                    <label for="comment">
+                    <textarea name="comment" placeholder="Leave A Comment" id="commentbox"
+                        value="{{this.comment}}"></textarea><br>
+                </label>
+                <input type="hidden" id="itemId" name="itemId" value="{{_id}}">
+                <button type="submit">Submit</button>
+            </form>
             </div> 
             <div class = "links">
                 <a href="/items/increaseQ/{{_id}}?listId={{../groceryList._id}}" class="edit-link">Quantity +1</a>

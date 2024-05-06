@@ -313,3 +313,9 @@ a {
   .links a:hover{
     background-color: #ffffff;
   }
+
+  .commenter{
+    font-size: small; 
+    display: flex;
+    justify-content: right;
+  }

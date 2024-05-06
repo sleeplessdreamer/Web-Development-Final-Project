@@ -12,7 +12,9 @@ const exportedMethods = {
     text,
   ) {
     // error checking
-    checkId(listId, "list ID")
+    checkId(listId, "list ID"); 
+    checkId(userId, "User ID"); 
+    checkId(itemId, "Item ID");
     if (!text){
       throw 'Error: please enter text'; 
     }
@@ -23,10 +25,7 @@ const exportedMethods = {
     if (!user){
       throw 'Error: User not found'; 
     }
-    checkId(listId, "list ID"); 
-    if (!ObjectId.isValid(userId)) throw `invalid User Id`
-    if (!ObjectId.isValid(listId)) throw `invalid list Id`
-    if (!ObjectId.isValid(itemId)) throw `invalid item Id`
+    text = text.trim(); 
     const commentCollection = await comments(); 
     const date = new Date();
     const entry = {
@@ -56,6 +55,7 @@ const exportedMethods = {
     */
     const updateObject = {
       _id: entry._id,
+      userId: userId, 
       comments: text
     }
     let updateInfo = await groceryListList.updateOne(
@@ -68,7 +68,7 @@ const exportedMethods = {
     }
     //await groceryListItemsData.updateItem(itemId, updateObject);
     
-    return entry;
+    return insertInfo;
   },
   
   async getComment(id) {

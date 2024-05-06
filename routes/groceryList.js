@@ -83,6 +83,8 @@ router.route('/:id')
       })
       return;
     }
+    console.log(req.session.user); 
+    let name = req.session.user.firstName + " " + req.session.user.lastName;
     try {
       const groceryList = await groceryListData.getGroceryList(listId);
       res.status(200).render('groceryList/single', {
@@ -91,13 +93,52 @@ router.route('/:id')
         authenticated: true,
         household: true,
         groceryList,
-        listId
+        listId, 
+        name: name
       });
     } catch (e) {
       //console.error('Error fetching grocery list:', e);
-      res.status(500).render('error', { pageTitle: 'Error', errors: e, authenitcated: true, household: true });
+      res.status(500).render('error', { pageTitle: 'Error', errors: e, authenticated: true, household: true });
     }
-  });
+  })
+  .post(async(req, res) => {
+    let comment = req.body.comment;
+    //console.log(req.body);
+    //console.log(req.session);
+    let listId = req.params.id; 
+    let itemId = req.body.itemId; 
+    //console.log(listId);
+    let errors = []; 
+    let userId = req.session.user.userId; 
+    try {
+      listId = checkId(listId.toString(), "List Id");
+    } catch (e) {
+      errors.push(e);
+    }
+    //console.log("in routes");
+    let newComment; 
+    //console.log(listId);
+    if (errors.length > 0) {
+      res.status(400).render('groceryList/single', {
+        pageTitle: "New Grocery List",
+        errors: errors,
+        hasErrors: true,
+        listId: listId,
+        authenticated: true,
+        household: true
+      });
+      return;
+    }
+    try{
+      newComment = await commentsData.newComment(userId, listId, itemId, comment);
+      //console.log(newComment);
+      if (newComment.acknowledged === false) throw 'Error: unable to add comment';
+      return res.status(200).redirect('/groceryLists/'+listId);
+    } catch (error){
+      //errors.push(e);
+      return res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
+    }
+  })
 
 router.route('/delete')
 .get(async (req, res) => {
