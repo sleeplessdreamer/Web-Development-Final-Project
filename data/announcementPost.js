@@ -79,9 +79,8 @@ const exportedMethods = {
       return { updated: true };
     }
   },
-<<<<<<< HEAD
   
-  async updateAnnouncement( // -- users add comments to announcements
+  async updateAnnouncement(
     id,
     action,
     groceryItem,
@@ -96,11 +95,30 @@ const exportedMethods = {
     groceryList = checkString(groceryList, 'Grocery List');
     comment = checkString(comment, 'Comment');
     userId = checkId(userId, 'User ID');
-=======
-
+    const announcementCollection = await announcements();
+    const updatedAnnouncement = await announcementCollection.updateOne(
+      {
+        _id: ObjectId(id)
+      },
+      {
+        $set: { 
+          action: action,
+          groceryItem: groceryItem,
+          groceryList: groceryList,
+          comment: comment,
+          userId: new ObjectId(userId)
+        } 
+      }
+    );
+    if(!updatedAnnouncement.modifiedCount){
+      throw `Could not update announcement with id of ${id}`;
+    }
+    else{
+      return {updated: true};
+    }
+    },
   async getAnnouncementById(id) {
     id = checkId(id, "Announcement Id");
->>>>>>> 83d39c7ef3bd9cf32d60cda3670fc179322174fc
     const announcementCollection = await announcements();
     const announcementPost = await announcementCollection.findOne({ _id: new ObjectId(id) });
     if (!announcementPost) {
