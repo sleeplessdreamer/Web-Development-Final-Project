@@ -93,7 +93,6 @@ const exportedMethods = {
   async updateAnnouncement(id, comment) {
     id = checkId(id, "Announcement Id");
     comment = checkString(comment, "comment");
-    console.log(comment);
     const currentAnnouncement = await this.getAnnouncementById(id);
     if (!currentAnnouncement) throw `Error: Cound not find announcement`;
 
@@ -120,7 +119,6 @@ const exportedMethods = {
       { $set: { 'announcements.$': updateAnnouncement } },
       { returnDocument: 'after' }
     );
-    console.log(updatedInfo);
     // if user cannot be updated method should throw
     if (!updatedInfo) {
       throw 'Error: Could not update user successfully';

@@ -145,7 +145,6 @@ const exportedMethods = {
     //    if (!userId || !groceryName || !listType) {
     //      throw 'Must provide all fields to update Grocery List';
     //    }
-
     listId = checkId(listId, "Grocery List Id");
     groceryName = checkString(groceryName, "Grocery List Name");
     let currentList = await this.getGroceryList(listId);

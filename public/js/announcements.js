@@ -13,7 +13,7 @@
     $('#announcement-form').submit(function (event) {
         event.preventDefault();
 
-        let comment = $('#acomment').val();
+        let comment = $('#comment').val();
 
         try {
             comment = checkString(comment, 'Comment');
@@ -27,7 +27,7 @@
             }).done(function (response) {
                 window.location.href = '/users/profile';
             }).fail(function (error) {
-                $('#error-output').text("Log in failed: " + error.responseJSON.message);
+                $('#error-output').text("Comment failed: " + error.responseJSON.message);
             });
         } catch (error) {
             $('#error-output').text(error);
