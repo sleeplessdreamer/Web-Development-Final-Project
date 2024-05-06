@@ -113,8 +113,8 @@ const checkAge = (age, varName) => {
   if (!Number.isInteger(age)) {  // if a decimal
     throw `${varName || 'provided variable'} is a decimal`;
   }
-  if (age < 0 ){
-    throw `${varName || 'provided variable'} cannot be negative`;
+  if (age <= 0 ){
+    throw `${varName || 'provided variable'} cannot be negative or 0`;
   }
   return age;
 }
