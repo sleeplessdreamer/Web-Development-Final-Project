@@ -76,7 +76,7 @@ router.route('/createItem')
       return res.redirect(`/items/createItem?listId=${listId}`);
     } catch (error) {
       // Handle errors appropriately, for example, render an error page
-      res.status(500).render('error', { error: error });
+      res.status(500).render('error', { pageTitle: 'Error', errors: error, authenticated: true, household: true });
     }
   });
 

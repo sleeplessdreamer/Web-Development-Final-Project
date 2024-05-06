@@ -39,7 +39,7 @@ router.route('/info')
     } catch (e) {
       errors.push(e);
       res.status(400).render('error', {
-        pageTitle: 'Info',
+        pageTitle: 'Error',
         user,
         authenticated: true,
         household: true,
