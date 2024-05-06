@@ -47,18 +47,6 @@
     </li>
     {{/each}}
 </ul>
-<h3>My Comments</h3>
-{{#if user.comments.length}}
-<ul class="comments-list">
-    {{#each user.comments}}
-    <li class="comments">
-        {{this}}
-    </li>
-    {{/each}}
-</ul>
-{{else}}
-<p>No Comments Yet!</p>
-{{/if}}
 
 <h3>My Announcements</h3>
 {{#if user.announcements.length}}
