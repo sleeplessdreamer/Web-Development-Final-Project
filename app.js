@@ -309,6 +309,18 @@ app.use('/groceryLists', async (req, res, next) => {
   }
 });
 
+app.use('/groceryLists/:id', async (req, res, next) => {
+  const authenticated = req.session.user;
+  if (!authenticated) {
+    return res.redirect('/users/login');
+  } else if (authenticated && authenticated.householdName.length === 0) {
+    return res.redirect('/household/new');
+  } else {
+    next();
+  }
+});
+
+
 app.use('/groceryLists/edit', async (req, res, next) => {
   const authenticated = req.session.user;
   if (!authenticated) {
