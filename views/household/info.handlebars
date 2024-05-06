@@ -17,6 +17,13 @@
     <div class="grocery-info">
         <h2 class="grocery"><strong>Groceries</strong></h2>
         <a href="/groceryLists/new">Create New Grocery List</a>
+
+        <form action="/household/searchLists" method="GET">
+            <label for="itemName">Search Lists by Item Name:</label>
+            <input type="text" id="itemName" name="itemName" placeholder="Enter item name">
+            <button type="submit">Search</button>
+        </form>
+
         {{#if groceryLists.length}}
         <div class="grid-container">
             {{#each groceryLists}}

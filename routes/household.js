@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import { householdData, userData } from '../data/index.js';
+import { householdData, userData, groceryListData } from '../data/index.js';
 import { checkHouseholdName } from '../validation.js';
 import xss from 'xss';
 
@@ -160,6 +160,31 @@ router.route('/join')
         household: false
       });
       return;
+    }
+  });
+
+router.route('/searchLists')
+  .get(async (req,res) => {
+    const user = req.session.user;
+    const itemName = req.query.itemName;
+    try {
+      const searchQuery = itemName.trim().toLowerCase()
+
+      if (searchQuery === ""){
+        throw `Search Query cannot be empty`;
+      }
+  
+      const allLists = await groceryListData.getAllGroceryLists();
+  
+      const matchingLists = allLists.filter(list => {
+        return list.items.some(item => item.itemName.toLowerCase().includes(searchQuery));
+      });
+      console.log(matchingLists)
+  
+      res.render('household/searchResults', { pageTitle: 'Search Results', matchingLists, searchQuery, user, authenticated: true,
+      household: true });
+    } catch (error) {
+      res.render('error', { pageTitle: 'Error', errors: error });
     }
   });
 

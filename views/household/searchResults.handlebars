@@ -1,0 +1,17 @@
+<h1>{{pageTitle}}</h1>
+    <h2>Matching Grocery Lists for "{{searchQuery}}"</h2>
+    {{#if matchingLists.length}}
+    <ul>
+        {{#each matchingLists}}
+        <li>
+            <a href="/groceryLists/{{this._id}}">{{this.groceryName}}</a>
+                    <p>Type: {{this.listType}}</p>
+                    <p>Created By: {{this.userName}}</p>
+                    <p>Date Created: {{this.dateCreated}}</p>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <p>No matching lists found.</p>
+    {{/if}}
+    <a href="/household/info">Back to Household</a>
