@@ -214,6 +214,9 @@ const exportedMethods = {
     }
     let listId = foundItem._id.toString();
     // cannot get rid of item ID when updating or change it
+
+    // console.log(foundItem);
+    // console.log(foundItem.items[0].comments);
     const updatedItem = {
       _id: new ObjectId(itemId),
       listId: listId,
@@ -221,7 +224,7 @@ const exportedMethods = {
       quantity: quantity,
       priority: priority,
       category: category,
-      comments: foundItem.comments
+      comments: foundItem.items[0].comments
     }
 
     let updateInfo = await groceryListList.findOneAndUpdate(
