@@ -11,9 +11,9 @@
                 <form method="POST" id="comment-form">
                     {{#if comments.length}}
                     {{#each comments}}
-                <li>{{comments}} <br>
-                    <p class = "commenter">{{../../name}}</p>
-                </li>
+                <ul>{{comments}} <br>
+                    <li><p class = "commenter">{{../../name}}</p></li>
+                </ul>
                     {{/each}}
                     {{/if}}
                     <label for="comment">
