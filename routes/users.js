@@ -213,6 +213,9 @@ router.route('/profile')
   .post(async (req, res) => {
     const user = req.session.user;
     let announcementComment = req.body;
+    if (announcementComment.comment.trim()===""){
+      return res.redirect('profile');
+    }
     let comment = xss(announcementComment.comment);
     let announcementId = xss(announcementComment.announcementId);
     let household = false;

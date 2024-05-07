@@ -22,7 +22,7 @@ router.route('/new')//hasn't been tested
   })
   .post(async (req, res) => {
     const user = req.session.user;
-    const newListData = req.body;
+    const newListData = xss(req.body);
     let userId = user.userId;
     let householdName = user.householdName;
     let groceryName = xss(newListData.groceryName);
@@ -102,11 +102,15 @@ router.route('/:id')
     }
   })
   .post(async(req, res) => {
-    let comment = req.body.comment;
+    let comment = xss(req.body.comment);
     //console.log(req.body);
     //console.log(req.session);
     let listId = req.params.id; 
-    let itemId = req.body.itemId; 
+    let itemId = xss(req.body.itemId); 
+
+    if (comment.trim() === ""){
+      res.redirect(`${listId}`);
+    }
     //console.log(listId);
     let errors = []; 
     let userId = req.session.user.userId; 
@@ -189,7 +193,7 @@ router.route('/edit/:id')
   })
   .post(async (req, res) => {
     const user = req.session.user;
-    let editData = req.body;
+    let editData = xss(req.body);
     let groceryName, listType;
     let listId = req.params.id;
     let errors = [];

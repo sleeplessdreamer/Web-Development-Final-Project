@@ -113,7 +113,7 @@ router.route('/createItem')
       await groceryItemsData.updateItem(itemId, item, user.userId);
 
       // Redirect back to the grocery list page
-      res.redirect(`/groceryLists/${listId}`);
+      return res.redirect(`/groceryLists/${listId}`);
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: 'Failed to increase quantity.' });
