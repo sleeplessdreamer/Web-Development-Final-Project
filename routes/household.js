@@ -170,9 +170,9 @@ router.route('/searchLists')
     try {
       const searchQuery = itemName.trim().toLowerCase()
 
-      searchcheckString(searchQuery);
+      checkString(searchQuery);
   
-      const allLists = await groceryListData.getAllGroceryLists();
+      const allLists = await householdData.getAllGroceryListsByHousehold(user.householdName);
   
       const matchingLists = allLists.filter(list => {
         return list.items.some(item => item.itemName.toLowerCase().includes(searchQuery));
@@ -182,6 +182,7 @@ router.route('/searchLists')
       res.render('household/searchResults', { pageTitle: 'Search Results', matchingLists, searchQuery, user, authenticated: true,
       household: true });
     } catch (error) {
+      console.log(error);
       return res.redirect('/household/info');
     }
   });
