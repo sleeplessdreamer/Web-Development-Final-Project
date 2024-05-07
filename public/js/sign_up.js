@@ -84,6 +84,7 @@
     } catch (e) {
       event.preventDefault();
       let ferror = document.getElementById('ferror');
+      ferror.classList.remove('hidden');
       ferror.textContent = e;
       //ferror.classList.remove('hidden');
       //error.classList.add('hidden');
@@ -96,6 +97,7 @@
     } catch (e) {
       event.preventDefault();
       let lerror = document.getElementById('lerror');
+      lerror.classList.remove('hidden');
       lerror.textContent = e;
     }
     // email
@@ -106,6 +108,7 @@
     } catch (e) {
       event.preventDefault();
       let eerror = document.getElementById('eerror');
+      eerror.classList.remove('hidden');
       eerror.textContent = e;
     }
 
@@ -117,6 +120,7 @@
     } catch (e) {
       event.preventDefault();
       let aerror = document.getElementById('aerror');
+      aerror.classList.remove('hidden');
       aerror.textContent = e;
     }
 
@@ -128,6 +132,7 @@
     } catch (e) {
       event.preventDefault();
       let perror = document.getElementById('perror');
+      perror.classList.remove('hidden');
       perror.textContent = e;
     }
     //signup.reset(); // do i need this? 

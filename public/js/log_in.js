@@ -36,6 +36,7 @@
             eerror.classList.add('hidden');
         } catch (e) {
             event.preventDefault();
+            eerror.classList.remove('hidden');
             eerror.textContent = e;
         }
         try {
@@ -43,6 +44,7 @@
             perror.classList.add('hidden');
         } catch (e) {
             event.preventDefault();
+            perror.classList.remove('hidden');
             perror.textContent = e;
         }
         //return; 
