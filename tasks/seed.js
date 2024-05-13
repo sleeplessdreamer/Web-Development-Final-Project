@@ -178,11 +178,7 @@ ourHousehold = await households.joinHousehold(
     userSix._id.toString()
 );
 
-let allHouses = await households.getAllHouseholds();
-
-console.log(await households.rotateShopper());
-console.log(await households.rotateShopper());
-console.log(await households.rotateShopper());
+await households.getAllHouseholds();
 
 let announcement = await announcements.getAllAnnouncementsByHouseholdName(ourHousehold.householdName);
 //console.log(announcement);

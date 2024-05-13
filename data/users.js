@@ -39,7 +39,7 @@ const exportedMethods = {
     let groceryLists = [];
     let announcements = [];
     let comments = [];
-    let shopper = false;
+    //let shopper = false;
     const newUser = {
       email,
       hashedPassword,
@@ -49,8 +49,8 @@ const exportedMethods = {
       householdName,
       groceryLists,
       announcements,
-      comments,
-      shopper
+      comments
+      //shopper
     };
 
     // Add New User

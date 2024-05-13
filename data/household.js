@@ -23,15 +23,14 @@ const exportedMethods = {
 
     // Create New Household
     let members = [userMember.firstName + " " + userMember.lastName], // put the user who created the id in the household
-      groceryLists = [], currentShopper = 0;
+      groceryLists = [];
     const newhouseHold = {
       householdName,
       members,
       groceryLists,
-      currentShopper: currentShopper,
-      currentShopperName: members[currentShopper]
+      shopper: members[0],
+      shopperAssigned: new Date('2024-04-21T00:00:00') // reference point
     }
-
     // Insert New Household
     const insertInfo = await householdCollection.insertOne(newhouseHold);
     if (!insertInfo.acknowledged || !insertInfo.insertedId)
@@ -180,7 +179,7 @@ const exportedMethods = {
     const householdCollection = await household();
     let householdList = await householdCollection
       .find({})
-      .project({ _id: 0, householdName: 1})   // just return the name of the household
+      .project({ _id: 0, householdName: 1 })   // just return the name of the household
       .toArray();
     if (!householdList) {
       throw `Could not get all users`
@@ -212,29 +211,45 @@ const exportedMethods = {
   // rotates shopper each week
   async rotateShopper() {
     const households = await this.getAllHouseholds();
-    for (const house in households) {
-      const currentHouse = await this.getHouseholdByName(households[house]);
-      const members = await this.getAllUsersByHousehold(households[house]);
-      if (!members) throw `Error: Could not get household members`;
-      currentHouse.currentShopper = (currentHouse.currentShopper + 1) % members.length;
-      currentHouse.currentShopperName = members[currentHouse.currentShopper];
-      // Update household info
-      const updatedHousehold = {
-        currentShopper: currentHouse.currentShopper,
-        currentShopperName: currentHouse.currentShopperName
-      }
-      const householdCollection = await household();
-      let updatedInfo = await householdCollection.findOneAndUpdate(
-        { _id: new ObjectId(currentHouse._id) },
-        { $set: updatedHousehold },
-        { returnDocument: 'after' }
-      );
-      // if household cannot be updated method should throw
-      if (!updatedInfo) {
-        throw 'Error: Could not update household successfully';
+    for (let i = 0; i <= households.length - 1; i++) {
+      const currentHouse = await this.getHouseholdByName(households[i]);
+      const allMembers = currentHouse.members
+      let previousDate = currentHouse.shopperAssigned // reference point
+      const currentDate = new Date();
+      const week = 604800000; // week in milliseconds
+      // check if a week has passed and update 
+      if (currentDate - previousDate >= week) {
+        let shopperIndex;
+        if (allMembers !== undefined) {
+          for (let i = 0; i <= allMembers.length - 1; i++) {
+            if (allMembers[i] === currentHouse.shopper) {
+              shopperIndex = i; // find the current index of the shopper in the list of members
+            }
+          };
+        }
+        shopperIndex = (shopperIndex + 1) % allMembers.length; // rotate through each member
+        currentHouse.shopper = allMembers[shopperIndex]; // find name
+        previousDate = currentDate; // update date
+
+        // Update household info
+        const updatedHousehold = {
+          shopper: currentHouse.shopper,
+          shopperAssigned: previousDate
+        }
+        const householdCollection = await household();
+        const updatedInfo = await householdCollection.findOneAndUpdate(
+          { _id: new ObjectId(currentHouse._id) },
+          { $set: updatedHousehold },
+          { returnDocument: 'after' }
+        );
+        // if household cannot be updated method should throw
+        if (!updatedInfo) {
+          throw 'Error: Could not update household successfully';
+        }
+        console.log(updatedInfo);
       }
     }
-    return {rotateShopper: true};
+    return { rotateShopper: true };
   }
 
 };
