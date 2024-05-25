@@ -22,7 +22,7 @@ router.route('/new')//hasn't been tested
   })
   .post(async (req, res) => {
     const user = req.session.user;
-    const newListData = xss(req.body);
+    const newListData = req.body;
     let userId = user.userId;
     let householdName = user.householdName;
     let groceryName = xss(newListData.groceryName);
@@ -193,7 +193,7 @@ router.route('/edit/:id')
   })
   .post(async (req, res) => {
     const user = req.session.user;
-    let editData = xss(req.body);
+    let editData = req.body;
     let groceryName, listType;
     let listId = req.params.id;
     let errors = [];
