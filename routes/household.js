@@ -169,8 +169,6 @@ router.route('/searchLists')
     const itemName = req.query.itemName;
     try {
       const searchQuery = itemName.trim().toLowerCase()
-
-      checkString(searchQuery);
   
       const allLists = await householdData.getAllGroceryListsByHousehold(user.householdName);
   
