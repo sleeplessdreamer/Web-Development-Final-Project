@@ -194,7 +194,7 @@ router.route('/editItem/:id')
     }
     if (comments) {
       try {
-        comments = checkString(comments, 'Comment');
+        comments = checkComment(comments, 'Comment');
       } catch (e) {
         errors.push(e);
       }

@@ -198,16 +198,7 @@ const exportedMethods = {
     // Make New Announcement
     const announcement = userMember.firstName + " " + userMember.lastName + " created a list called '" + groceryList.groceryName + "'!";
     let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='createList';
-    let day = currentDate.getUTCDate();
-    let month = currentDate.getUTCMonth() + 1;
-    const year = currentDate.getUTCFullYear();
-    if (month.toString().length === 1) {
-      month = "0" + month;
-    }
-    if (day.toString().length === 1) {
-      day = "0" + day;
-    }
-    currentDate = month + "/" + day + "/" + year;
+    currentDate = currentDate.toLocaleDateString()
 
     const newAnnouncement = {
       action, // might get rid of this 
@@ -252,16 +243,7 @@ const exportedMethods = {
     // Make New Announcement
     const announcement = userMember.firstName + " " + userMember.lastName + " deleted a list called '" + groceryList.groceryName + "'!";
     let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='deleteList';
-    let day = currentDate.getUTCDate();
-    let month = currentDate.getUTCMonth() + 1;
-    const year = currentDate.getUTCFullYear();
-    if (month.toString().length === 1) {
-      month = "0" + month;
-    }
-    if (day.toString().length === 1) {
-      day = "0" + day;
-    }
-    currentDate = month + "/" + day + "/" + year;
+    currentDate = currentDate.toLocaleDateString()
 
     const newAnnouncement = {
       action, // might get rid of this 
@@ -305,16 +287,8 @@ const exportedMethods = {
     // Make New Announcement
     const announcement = userMember.firstName + " " + userMember.lastName + " edited the list '" + groceryList.groceryName + "'!";
     let currentDate = new Date(), groceryItem = "", comment = "", householdName = userMember.householdName, action='editList';
-    let day = currentDate.getUTCDate();
-    let month = currentDate.getUTCMonth() + 1;
-    const year = currentDate.getUTCFullYear();
-    if (month.toString().length === 1) {
-      month = "0" + month;
-    }
-    if (day.toString().length === 1) {
-      day = "0" + day;
-    }
-    currentDate = month + "/" + day + "/" + year;
+    currentDate = currentDate.toLocaleDateString()
+
 
     const newAnnouncement = {
       action, // might get rid of this 

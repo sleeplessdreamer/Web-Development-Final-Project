@@ -58,7 +58,7 @@ router.route('/')
       action: "announcement",
       groceryItem: checkString(groceryItem), 
       groceryList: checkString(groceryList),
-      comment: checkString(comment),
+      comment: checkComment(comment),
       userId: user._id
     };  // UP TO HERE
     const announcementCreated = await announcementData.newAnnouncement(newAnnouncement);

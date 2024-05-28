@@ -71,7 +71,7 @@ const exportedMethods = {
 
     // check that passwords match
     let compare = await bcrypt.compare(password, user[0].hashedPassword);
-    if (!compare) throw `Error: Incorrect Password`;
+    if (!compare) throw `Error: Either Incorrect Email Or Password`;
 
     return user[0];
   },

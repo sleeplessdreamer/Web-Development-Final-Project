@@ -12,6 +12,19 @@ const checkId = (id, varName) => {
   return id;
 }
 
+const checkComment = (strVal, varName) => {
+  if (!strVal) throw `Error: You must supply a ${varName}!`;
+  if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
+  strVal = strVal.trim();
+  if (strVal.length === 0)
+    throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+  if (!isNaN(strVal))
+    throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
+  if (strVal.length > 200)
+    throw `Error: ${varName} cannot be greater than 200 chars`;
+  return strVal;
+}
+
 const checkString = (strVal, varName) => {
   if (!strVal) throw `Error: You must supply a ${varName}!`;
   if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
@@ -20,7 +33,8 @@ const checkString = (strVal, varName) => {
     throw `Error: ${varName} cannot be an empty string or string with just spaces`;
   if (!isNaN(strVal))
     throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
-
+  if (strVal.length > 30)
+    throw `Error: ${varName} cannot be greater than 30 chars`;
   return strVal;
 }
 
@@ -32,6 +46,8 @@ const checkHouseholdName = (strVal, varName) => {
   if (!isNaN(strVal)) throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
   if (strVal.includes(' ')) throw `Error: ${strVal} cannot contain spaces`;
   strVal = strVal.slice(0, 1).toUpperCase() + strVal.slice(1).toLowerCase(); // store household name as uppercase and lower  
+  if (strVal.length > 30)
+    throw `Error: ${varName} cannot be greater than 30 chars`;
   return strVal;
 }
 
@@ -58,6 +74,8 @@ const checkEmail = (email, varName) => {
   // https://www.npmjs.com/package/email-validator imported npm that checks if valid email address
   if (!EmailValidator.validate(email))
     throw `Error: ${email} is an invalid ${varName}`;
+  if (email.length > 30)
+    throw `Error: ${varName} cannot be greater than 30 chars`;
   email = email.toLowerCase(); // case in-sensitive
   return email;
 }
@@ -74,7 +92,7 @@ const checkPasswordSignUp = (password, varName) => {
   if (!isNaN(password)) // only numbers
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   // https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
-  let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
   if (!password.match(regEx))
     throw `Error: ${varName} must be at least 8 chars, has one upper and lower case letter, 1 digit, & contains at least one special character`;
   return password;
@@ -116,6 +134,9 @@ const checkAge = (age, varName) => {
   if (age <= 0 ){
     throw `${varName || 'provided variable'} cannot be negative or 0`;
   }
+  if (age > 101 ){
+    throw `${varName || 'provided variable'} cannot be greater than 101`;
+  }
   return age;
 }
 
@@ -140,5 +161,5 @@ const checkCategory = (strVal, varName) => {
   return strVal;
 }
 
-export { checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge, checkHouseholdName };
+export { checkId, checkString, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkName, checkAge, checkHouseholdName, checkComment };
 

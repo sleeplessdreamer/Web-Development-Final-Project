@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 import { userData, groceryListData, announcementData } from '../data/index.js';
-import { checkId, checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkString } from '../validation.js';
+import { checkId, checkName, checkAge, checkEmail, checkPasswordSignUp, checkPasswordLogin, checkString, checkComment } from '../validation.js';
 import { users } from '../config/mongoCollections.js'; // import collection
 import xss from 'xss';
 
@@ -224,7 +224,7 @@ router.route('/profile')
     }
     let errors = [];
     try {
-      comment = checkString(comment, "Comment");
+      comment = checkComment(comment, "Comment");
     } catch (e) {
       errors.push(e);
       res.status(400).render("error", {

@@ -25,6 +25,7 @@ const exportedMethods = {
     if (!user){
       throw 'Error: User not found'; 
     }
+    text = checkComment(text, "Comment");
     text = text.trim(); 
     const commentCollection = await comments(); 
     const date = new Date();

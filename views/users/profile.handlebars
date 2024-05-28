@@ -16,6 +16,7 @@
 </table>
 
 <h3>My Grocery Lists</h3>
+{{#if groceryList.length}}
 <ul class="grocerys-list">
     {{#each groceryList}}
     <li class="groceryLists">
@@ -47,6 +48,9 @@
     </li>
     {{/each}}
 </ul>
+{{else}}
+<p>No Grocery Lists Yet!</p>
+{{/if}}
 
 <h3>My Announcements</h3>
 {{#if user.announcements.length}}
