@@ -70,7 +70,7 @@ header {
     padding: 15px 18px;
     text-decoration: none;
     font-size: 18px;
-    background: rgb(1, 53, 1);
+    background: #3d8b5b;
     border-radius: 5px;
 }
 
@@ -87,6 +87,17 @@ header {
     font-size: 18px;
     background: #4eaf73;
     border-radius: 5px;
+}
+
+#new-list-button {
+    text-decoration: none;
+    background: #4eaf73;
+    border-radius: 5px;
+    color: white;
+    padding: 12px 14px;
+    margin: 10px;
+    font-size: 15px;
+    font-weight: normal;
 }
 
 .navigation a:hover,
@@ -119,6 +130,19 @@ h2 {
     padding-bottom: 20px;
 }
 
+#search-button {
+    background-color: #4eaf73;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+    padding: 6px 10px;  
+}
+
+#search-button:hover {
+    background: #3d8b5b;
+}
+
 #submit-button,
 #reset-button {
     background-color: #4eaf73;
@@ -132,7 +156,8 @@ h2 {
 }
 
 #submit-button:hover,
-#reset-button:hover {
+#reset-button:hover,
+#new-list-button:hover {
     background: #3d8b5b;
 }
 
@@ -146,11 +171,26 @@ h1 {
 #password,
 #username,
 #age,
-#householdName {
+#householdName
+#itemName
+ {
     border-radius: 5px;
     border-width: 1px;
     padding: 10px;
     margin: 5px;
+}
+
+.grocery-info .search #itemName {
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 5px;
+    margin: 5px;
+}
+
+
+
+.grocery-info .search {
+    padding: 10px;
 }
 
 .announcements-list,
@@ -178,7 +218,8 @@ h1 {
 .login,
 .signup,
 .newItem,
-.newList {
+.newList
+.search {
     text-align: center;
     border-radius: 5px;
     background-color: white;

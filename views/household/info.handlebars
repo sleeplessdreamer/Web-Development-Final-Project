@@ -15,15 +15,17 @@
         </ul>
     </div>
     <div class="grocery-info">
-        <h2 class="grocery"><strong>Groceries</strong></h2>
-        <a href="/groceryLists/new"><strong>Create New Grocery List</strong></a>
-
-        <form action="/household/searchLists" method="GET">
-            <label for="itemName">Search Lists by Item Name:</label>
-            <input type="text" id="itemName" name="itemName" placeholder="Enter item name">
-            <button type="submit">Search</button>
-        </form>
-
+        <h2 class="grocery"><strong>Groceries</strong>
+        <a href="/groceryLists/new" id="new-list-button">New Grocery List</a>
+        </h2>
+        <div class="search">
+            <form action="/household/searchLists" class="search-form" id="search-form" method="GET">
+                <label for="itemName">
+                    <input type="text" id="itemName" name="itemName" placeholder="Search Item Name">
+                </label>
+                <button type="submit" id="search-button">Search</button>
+            </form>
+        </div>
         {{#if groceryLists.length}}
         <div class="grid-container">
             {{#each groceryLists}}
