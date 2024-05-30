@@ -84,7 +84,6 @@ router.route('/:id')
       return;
     }
     //console.log(req.session.user); 
-    let name = req.session.user.firstName + " " + req.session.user.lastName;
     try {
       const groceryList = await groceryListData.getGroceryList(listId);
       res.status(200).render('groceryList/single', {
@@ -93,8 +92,7 @@ router.route('/:id')
         authenticated: true,
         household: true,
         groceryList,
-        listId, 
-        name: name
+        listId
       });
     } catch (e) {
       //console.error('Error fetching grocery list:', e);
@@ -113,7 +111,8 @@ router.route('/:id')
     }
     //console.log(listId);
     let errors = []; 
-    let userId = req.session.user.userId; 
+    let user = req.session.user;
+    let userId = user.userId;
     try {
       listId = checkId(listId.toString(), "List Id");
     } catch (e) {

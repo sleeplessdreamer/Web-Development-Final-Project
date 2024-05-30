@@ -1,7 +1,7 @@
 import {Router} from 'express';
 const router = Router();
 import {announcementData} from '../data/index.js';
-import {checkString} from '../validation.js';
+import {checkString, checkComment} from '../validation.js';
 
 router.route('/')
   .get(async (req, res) => {

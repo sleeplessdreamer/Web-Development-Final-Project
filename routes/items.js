@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 import { groceryItemsData } from '../data/index.js';
-import { checkString, checkAge, checkId } from '../validation.js';
+import { checkString, checkAge, checkId, checkComment } from '../validation.js';
 import xss from 'xss';
 
 router.route('/createItem')

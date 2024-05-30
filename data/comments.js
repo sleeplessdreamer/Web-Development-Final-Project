@@ -1,5 +1,5 @@
 import {users, comments, groceryLists} from '../config/mongoCollections.js';
-import {checkId} from '../validation.js';
+import {checkId, checkComment} from '../validation.js';
 import userData from './users.js'
 import groceryListItemsData from './groceryListItems.js';
 import { ObjectId } from 'mongodb';
@@ -32,6 +32,7 @@ const exportedMethods = {
     const entry = {
       userId,
       text,
+      name: user.firstName + " " + user.lastName,
       date
     };
     const insertInfo = await commentCollection.insertOne(entry);
@@ -56,8 +57,9 @@ const exportedMethods = {
     */
     const updateObject = {
       _id: entry._id,
-      userId: userId, 
-      comments: text
+      userId: entry.userId, 
+      name: entry.name,
+      comments: entry.text
     }
     let updateInfo = await groceryListList.updateOne(
       { 'items._id': new ObjectId(itemId)},
